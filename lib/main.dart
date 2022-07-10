@@ -304,13 +304,18 @@ class _CivListState extends State<CivList> {
       verticalGridSpacing: 16,
       shrinkWrap: true,
       children: civIndexList
-          .map((index) => OutlinedButton(
-                onPressed: () => setState(() {
-                  context.read<DraftConfiguration>().toggleCivBan(index);
-                }),
-                style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
-                child: Text(globals.civList[index]['nationName'],
-                    style: bannedCivIndices.contains(index) ? mediumStrikeThroughStyle : mediumTextStyle),
+          .map((index) => Tooltip(
+                message: globals.civList[index]["leaderName"],
+                textStyle: mediumCopyStyle,
+                preferBelow: false,
+                child: OutlinedButton(
+                  onPressed: () => setState(() {
+                    context.read<DraftConfiguration>().toggleCivBan(index);
+                  }),
+                  style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
+                  child: Text(globals.civList[index]['nationName'],
+                      style: bannedCivIndices.contains(index) ? mediumStrikeThroughStyle : mediumTextStyle),
+                ),
               ))
           .toList(),
     );
