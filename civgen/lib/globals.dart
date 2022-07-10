@@ -1,6 +1,6 @@
 library civgen.globals;
 
-// Setup fields
+// Default fields
 int numPlayers = 3;
 int numCivs = 3;
 
@@ -63,4 +63,3 @@ List<String> civList = [
   "Vietnam",
   "Zulu"
 ];
-List<bool> isBannedList = List<bool>.generate(civList.length, (i) => false);

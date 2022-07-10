@@ -1,13 +1,15 @@
+import 'dart:collection';
 import 'dart:developer';
 import 'package:civgen/styles.dart';
-import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import 'globals.dart' as globals;
+import 'models.dart';
+import 'text/intro.dart';
 
 final Uri url = Uri.parse('https://www.buymeacoffee.com/bernstern');
 void _launchUrl() async {
@@ -24,10 +26,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Civ Gen',
-      theme: theme,
-      home: const HomePage(title: 'The Draft'),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => DraftConfiguration(
+            numPlayers: globals.numPlayers,
+            numCivs: globals.numCivs,
+          ),
+        )
+      ],
+      child: MaterialApp(
+        title: 'Civ Gen',
+        theme: theme,
+        home: const HomePage(title: 'The Draft'),
+      ),
     );
   }
 }
@@ -81,7 +93,6 @@ class IntroBlurb extends StatefulWidget {
 
 class _IntroBlurbState extends State<IntroBlurb> {
   bool _isHidden = true; // TODO change this later to false
-  String rules = '';
 
   void _hideWidget() {
     setState(() {
@@ -90,14 +101,8 @@ class _IntroBlurbState extends State<IntroBlurb> {
     });
   }
 
-  Future<String> loadRules(BuildContext context) async {
-    return await rootBundle.loadString("rules.txt");
-  }
-
   @override
   Widget build(BuildContext context) {
-    loadRules(context);
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Visibility(
@@ -114,19 +119,7 @@ class _IntroBlurbState extends State<IntroBlurb> {
                 padding: EdgeInsets.all(8.0),
                 child: CardTitle(title: "The Civilization Draft"),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder(
-                  future: loadRules(context),
-                  builder: (context, snapshot) => (Text(
-                    '${snapshot.data}',
-                    softWrap: true,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  )),
-                ),
-              ),
+              Padding(padding: const EdgeInsets.all(8.0), child: Text(rules, style: mediumCopyStyle)),
               Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: ElevatedButton(
@@ -155,16 +148,11 @@ class SetupCard extends StatefulWidget {
 class _SetupCardState extends State<SetupCard> {
   final String title = 'Setup';
 
-  void updateNumPlayers(int numPlayers) {
-    globals.numPlayers = numPlayers;
-  }
-
-  void updateNumCivs(int numCivs) {
-    globals.numCivs = numCivs;
-  }
-
   @override
   Widget build(BuildContext context) {
+    int currentNumPlayers = context.select<DraftConfiguration, int>((config) => config.numPlayers);
+    int currentNumCivs = context.select<DraftConfiguration, int>((config) => config.numCivs);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -189,32 +177,24 @@ class _SetupCardState extends State<SetupCard> {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: 5),
               children: [
                 Container(),
-                Container(
-                    alignment: Alignment.centerRight,
-                    child: const Text(
-                      "Players",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    )),
+                Container(alignment: Alignment.centerRight, child: Text("Players", style: mediumTextStyle)),
                 LabeledSlider(
                   title: "Players",
-                  initialValue: globals.numPlayers,
-                  updateFunction: updateNumPlayers,
+                  initialValue: currentNumPlayers,
+                  updateFunction: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
                   maxValue: globals.maxPlayers,
                 ),
                 Container(
-                    alignment: Alignment.centerRight,
-                    child: const Text(
-                      "Civs Per Player",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    )),
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "Civs Per Player",
+                    style: mediumTextStyle,
+                  ),
+                ),
                 LabeledSlider(
                   title: "Civs",
-                  initialValue: globals.numCivs,
-                  updateFunction: updateNumCivs,
+                  initialValue: currentNumCivs,
+                  updateFunction: (value) => context.read<DraftConfiguration>().setNumCivs(value),
                   maxValue: globals.maxCivs,
                 ),
                 Container(),
@@ -225,14 +205,16 @@ class _SetupCardState extends State<SetupCard> {
               child: Text("Please select the civs you wish to ban from the draft.", style: TextStyle(fontSize: 16)),
             ),
             // TODO: Once the google integration works, just show all civs by default but make played civs pre banned
-            Padding(
-              padding: const EdgeInsets.only(top: 8, left: 16.0, right: 16.0, bottom: 16.0),
+            const Padding(
+              padding: EdgeInsets.only(top: 8, left: 16.0, right: 16.0, bottom: 16.0),
               child: CivList(),
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<DraftConfiguration>().logConfiguration();
+                },
                 style: buttonStyle,
                 child: Text(
                   'Draft',
@@ -297,20 +279,9 @@ class CivList extends StatefulWidget {
 }
 
 class _CivListState extends State<CivList> {
-  void toggleCivBan(int index) {
-    globals.isBannedList[index] = !globals.isBannedList[index];
-    log("Toggled civ ban for civ ${globals.civList[index]}");
-  }
-
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = TextStyle(
-      fontSize: 16,
-      color: Theme.of(context).primaryColor,
-    );
-
-    final ButtonStyle buttonStyle = ElevatedButton.styleFrom(primary: Theme.of(context).cardColor);
-    final ButtonStyle bannedStyle = ElevatedButton.styleFrom(primary: Theme.of(context).cardColor.withOpacity(0.5));
+    HashSet<int> bannedCivIndices = context.select<DraftConfiguration, HashSet<int>>((config) => config.bannedCivs);
 
     final List civIndexList = Iterable<int>.generate(globals.civList.length).toList();
 
@@ -322,21 +293,14 @@ class _CivListState extends State<CivList> {
       children: civIndexList
           .map((index) => OutlinedButton(
                 onPressed: () => setState(() {
-                  toggleCivBan(index);
+                  context.read<DraftConfiguration>().toggleCivBan(index);
                 }),
-                style: globals.isBannedList[index] ? bannedStyle : buttonStyle,
-                child: Text(globals.civList[index], style: textStyle),
+                style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
+                child: Text(globals.civList[index], style: mediumTextStyle),
               ))
           .toList(),
     );
   }
-}
-
-class DraftResult extends StatefulWidget {
-  const DraftResult({Key? key}) : super(key: key);
-
-  @override
-  State<DraftResult> createState() => _DraftResultState();
 }
 
 // Widget for the title of a card
