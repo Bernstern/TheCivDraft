@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 ThemeData theme = ThemeData(
-  cardColor: const Color.fromRGBO(0x04, 0x04, 0x03, 1), // Black
-  shadowColor: const Color.fromRGBO(0xC3, 0xE8, 0xBD, 1), // Light Green
-  backgroundColor: const Color.fromRGBO(0x22, 0x38, 0x43, 0.5), // Gunmetal
-  // primaryColor: const Color.fromRGBO(0x5B, 0x75, 0x53, 1), // Green
-  primaryColor: const Color.fromRGBO(0x9E, 0x38, 0x1F, 1), // Civ 6 logo red
-  errorColor: const Color.fromRGBO(0xF5, 0xEE, 0x9E, 1), // Green Yellow
+  cardColor: const Color.fromRGBO(0x21, 0x93, 0xbc, 1),
+  unselectedWidgetColor: const Color.fromRGBO(0x8e, 0xca, 0xe6, 1),
+  primaryColor: const Color.fromRGBO(0x02, 0x30, 0x47, 1),
+  focusColor: const Color.fromRGBO(0xFB, 0x85, 0x00, 1),
+  disabledColor: const Color.fromRGBO(0xFF, 0xB7, 0x03, 1),
 );
 
 final largeTextStyle = TextStyle(
@@ -19,9 +18,15 @@ final mediumTextStyle = TextStyle(
   color: theme.primaryColor,
 );
 
+final mediumStrikeThroughStyle = TextStyle(
+  fontSize: 18,
+  decoration: TextDecoration.lineThrough,
+  color: theme.primaryColor,
+);
+
 const mediumCopyStyle = TextStyle(
   fontSize: 18,
 );
 
 final ButtonStyle buttonStyle = ElevatedButton.styleFrom(primary: theme.cardColor);
-final ButtonStyle bannedStyle = ElevatedButton.styleFrom(primary: theme.cardColor.withOpacity(0.5));
+final ButtonStyle bannedStyle = ElevatedButton.styleFrom(primary: theme.cardColor.withOpacity(0.2));

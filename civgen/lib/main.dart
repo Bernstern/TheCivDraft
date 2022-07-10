@@ -213,7 +213,7 @@ class _SetupCardState extends State<SetupCard> {
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<DraftConfiguration>().logConfiguration();
+                  context.read<DraftConfiguration>().runDraft();
                 },
                 style: buttonStyle,
                 child: Text(
@@ -258,8 +258,8 @@ class _LabeledSliderState extends State<LabeledSlider> {
       max: widget.maxValue.toDouble(),
       label: _currentValue.toString(),
       divisions: widget.maxValue - 2,
-      inactiveColor: Theme.of(context).errorColor,
-      activeColor: Theme.of(context).primaryColor,
+      inactiveColor: Theme.of(context).disabledColor,
+      activeColor: Theme.of(context).focusColor,
       thumbColor: Theme.of(context).cardColor,
       onChanged: (double value) {
         setState(() {
@@ -296,7 +296,8 @@ class _CivListState extends State<CivList> {
                   context.read<DraftConfiguration>().toggleCivBan(index);
                 }),
                 style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
-                child: Text(globals.civList[index], style: mediumTextStyle),
+                child: Text(globals.civList[index],
+                    style: bannedCivIndices.contains(index) ? mediumStrikeThroughStyle : mediumTextStyle),
               ))
           .toList(),
     );
@@ -310,27 +311,95 @@ class DraftCard extends StatefulWidget {
   State<DraftCard> createState() => _DraftCardState();
 }
 
-class _DraftCardState() extends State<DraftCard> {
-  @override
-  Widget build(context) {
-    bool isVisible = context.select<DraftConfiguration, bool>((config) => config.draftResults.empty);
+class _DraftCardState extends State<DraftCard> {
+  Widget _buildDraftCard(BuildContext context, String title, int playerNumber, int civNumber, bool isSelected) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: 160,
+        maxWidth: double.infinity,
+      ),
+      child: OutlinedButton(
+        onPressed: () => {context.read<DraftConfiguration>().selectCiv(playerNumber, civNumber)},
+        style: isSelected ? buttonStyle : bannedStyle,
+        child: Text(
+          title,
+          style: mediumTextStyle,
+        ),
+      ),
+    );
+  }
 
-    return Visibility(visible: isVisible,
-     child: Container(
+  @override
+  Widget build(BuildContext context) {
+    var draftConfig = context.watch<DraftConfiguration>();
+    List<List<int>> draftResults = draftConfig.draftResults;
+    Map<int, int> draftChoices = draftConfig.draftChoices;
+    bool hasResults = draftResults.isNotEmpty;
+    int numPlayers = draftConfig.numPlayers;
+    int numCivs = draftConfig.numCivs;
+
+    log("$draftChoices");
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Visibility(
+        visible: hasResults,
+        child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
             color: Theme.of(context).backgroundColor,
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Column(
-            children: const [
-              Padding(
+            children: [
+              const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: CardTitle(title: "Draft Results"),
-              ), 
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: Text("The following civs were drafted, please select the civs you wish to play in the game.",
+                    style: mediumCopyStyle),
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    itemCount: numPlayers * (numCivs + 2),
+                    shrinkWrap: true,
+                    gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: numCivs + 2, childAspectRatio: 3),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 8),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: () {
+                              int row = index ~/ (numCivs + 2);
+                              int column = index % (numCivs + 2);
+
+                              switch (column) {
+                                // Case where this is the first entry in the row - show the player number
+                                case 0:
+                                  return Text(
+                                    "Player $row",
+                                    style: mediumTextStyle,
+                                  );
+                                case 1:
+                                  bool isSelected = draftChoices[row] == -1;
+                                  return _buildDraftCard(context, "Random", row, -1, isSelected);
+                                default:
+                                  int civIndex = draftResults[row][column - 2];
+                                  bool isSelected = draftChoices[row] == civIndex;
+                                  return _buildDraftCard(context, globals.civList[civIndex], row, civIndex, isSelected);
+                              }
+                            }(),
+                          ));
+                    },
+                  )),
             ],
-          )
-     ),
+          ),
+        ),
+      ),
     );
   }
 }

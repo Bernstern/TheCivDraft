@@ -16,7 +16,10 @@ class DraftConfiguration extends ChangeNotifier {
   HashSet<int> bannedCivs = HashSet<int>();
 
   // Store results of the draft in a list of of lists of indices of civs
-  List<int> draftResults = [];
+  List<List<int>> draftResults = [];
+
+  // Store the chosen civs in the draft as a map of player number to picked civ index
+  Map<int, int> draftChoices = {};
 
   // Setters for the number of players and civs per player
   void setNumPlayers(int numPlayers) {
@@ -41,5 +44,46 @@ class DraftConfiguration extends ChangeNotifier {
     log("Draft Configuration:");
     log("  numPlayers: $numPlayers");
     log("  numCivs: $numCivs");
+  }
+
+  void runDraft() {
+    // Clear past draft results
+    draftResults.clear();
+    draftChoices.clear();
+
+    // Log the current configuration
+    logConfiguration();
+
+    // Get a list of all the civs that are not banned
+    List<int> civIndexList = Iterable<int>.generate(globals.civList.length).toList();
+    civIndexList.removeWhere((int index) => bannedCivs.contains(index));
+
+    // Shuffle this list
+    civIndexList.shuffle();
+
+    // First pick nPlayers x nCivs from the list of unbanned civs
+    final List<int> draftedCivIndices = civIndexList.sublist(0, numPlayers * numCivs);
+
+    // Add the drafted civs to the draft results where each player gets numCivs
+    for (int i = 0; i < numPlayers; i++) {
+      draftResults.add(draftedCivIndices.sublist(i * numCivs, (i + 1) * numCivs));
+    }
+
+    // Notify listeners that the draft has finished
+    log("Draft Results: $draftResults");
+    notifyListeners();
+  }
+
+  void selectCiv(int playerNumber, int civIndex) {
+    if (civIndex < 0) {
+      log("Random selected");
+      draftChoices[playerNumber] = -1;
+      notifyListeners();
+      return;
+    }
+
+    log("Selecting civ ${globals.civList[civIndex]}");
+    draftChoices[playerNumber] = civIndex;
+    notifyListeners();
   }
 }
