@@ -1,17 +1,17 @@
 {
-    "name": "civgen",
-    "short_name": "civgen",
+    "name": "The Draft",
+    "short_name": "The Draft",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Civilization 6 Draft.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
         {
             "src": "icons/Icon-192.png",
-            "sizes": "192x192",
+            "sizes": "512x512",
             "type": "image/png"
         },
         {
@@ -21,7 +21,7 @@
         },
         {
             "src": "icons/Icon-maskable-192.png",
-            "sizes": "192x192",
+            "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
         },

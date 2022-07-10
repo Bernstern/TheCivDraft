@@ -1,2 +1,16 @@
-# civ_gen
-CivGen is a 1st* of a kind tool for random drafting for civ 6 multiplayer games. It is a web app written in Flutter that uses Firebase for data storage. The tech stack selection was made so that I could learn them :)
+# civgen
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

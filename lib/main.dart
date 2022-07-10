@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:math' as math;
 import 'package:civgen/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: Container(
             alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: math.max(MediaQuery.of(context).size.width * 0.5, 1000),
             child: Center(child: Column(children: const [IntroBlurb(), SetupCard(), DraftCard()])),
           ),
         ),
@@ -172,33 +173,45 @@ class _SetupCardState extends State<SetupCard> {
               child: Text("Please select the number of players and civilizations per player.",
                   style: TextStyle(fontSize: 16)),
             ),
-            GridView(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: 5),
-              children: [
-                Container(),
-                Container(alignment: Alignment.centerRight, child: Text("Players", style: mediumTextStyle)),
-                LabeledSlider(
-                  title: "Players",
-                  initialValue: currentNumPlayers,
-                  updateFunction: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
-                  maxValue: globals.maxPlayers,
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "Civs Per Player",
-                    style: mediumTextStyle,
+            Container(
+              alignment: Alignment.center,
+              child: ResponsiveGridList(
+                rowMainAxisAlignment: MainAxisAlignment.center,
+                minItemWidth: 400,
+                horizontalGridSpacing: 16,
+                verticalGridSpacing: 16,
+                shrinkWrap: true,
+                children: [
+                  Column(
+                    children: [
+                      Container(alignment: Alignment.center, child: Text("Players", style: mediumTextStyle)),
+                      LabeledSlider(
+                        title: "Players",
+                        initialValue: currentNumPlayers,
+                        updateFunction: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
+                        maxValue: globals.maxPlayers,
+                      ),
+                    ],
                   ),
-                ),
-                LabeledSlider(
-                  title: "Civs",
-                  initialValue: currentNumCivs,
-                  updateFunction: (value) => context.read<DraftConfiguration>().setNumCivs(value),
-                  maxValue: globals.maxCivs,
-                ),
-                Container(),
-              ],
+                  Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Civs Per Player",
+                          style: mediumTextStyle,
+                        ),
+                      ),
+                      LabeledSlider(
+                        title: "Civs",
+                        initialValue: currentNumCivs,
+                        updateFunction: (value) => context.read<DraftConfiguration>().setNumCivs(value),
+                        maxValue: globals.maxCivs,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
             const Padding(
               padding: EdgeInsets.all(8.0),
@@ -286,7 +299,7 @@ class _CivListState extends State<CivList> {
     final List civIndexList = Iterable<int>.generate(globals.civList.length).toList();
 
     return ResponsiveGridList(
-      minItemWidth: 140,
+      minItemWidth: 160,
       horizontalGridSpacing: 16,
       verticalGridSpacing: 16,
       shrinkWrap: true,
@@ -296,7 +309,7 @@ class _CivListState extends State<CivList> {
                   context.read<DraftConfiguration>().toggleCivBan(index);
                 }),
                 style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
-                child: Text(globals.civList[index],
+                child: Text(globals.civList[index]['nationName'],
                     style: bannedCivIndices.contains(index) ? mediumStrikeThroughStyle : mediumTextStyle),
               ))
           .toList(),
@@ -381,7 +394,7 @@ class _DraftCardState extends State<DraftCard> {
                                 // Case where this is the first entry in the row - show the player number
                                 case 0:
                                   return Text(
-                                    "Player $row",
+                                    "Player ${row + 1}",
                                     style: mediumTextStyle,
                                   );
                                 case 1:
@@ -390,7 +403,8 @@ class _DraftCardState extends State<DraftCard> {
                                 default:
                                   int civIndex = draftResults[row][column - 2];
                                   bool isSelected = draftChoices[row] == civIndex;
-                                  return _buildDraftCard(context, globals.civList[civIndex], row, civIndex, isSelected);
+                                  return _buildDraftCard(
+                                      context, globals.civList[civIndex]['nationName'], row, civIndex, isSelected);
                               }
                             }(),
                           ));
