@@ -15,6 +15,9 @@ class DraftConfiguration extends ChangeNotifier {
   // Keep track of the indices of banned civs in the current configuration
   HashSet<int> bannedCivs = HashSet<int>();
 
+  // Store results of the draft in a list of of lists of indices of civs
+  List<int> draftResults = [];
+
   // Setters for the number of players and civs per player
   void setNumPlayers(int numPlayers) {
     this.numPlayers = numPlayers;

@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'dart:developer';
 import 'package:civgen/styles.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:responsive_grid_list/responsive_grid_list.dart';
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
           child: Container(
             alignment: Alignment.center,
             width: MediaQuery.of(context).size.width * 0.5,
-            child: Center(child: Column(children: const [IntroBlurb(), SetupCard()])),
+            child: Center(child: Column(children: const [IntroBlurb(), SetupCard(), DraftCard()])),
           ),
         ),
       ),
@@ -92,7 +92,7 @@ class IntroBlurb extends StatefulWidget {
 }
 
 class _IntroBlurbState extends State<IntroBlurb> {
-  bool _isHidden = true; // TODO change this later to false
+  bool _isHidden = false; // TODO change this later to false
 
   void _hideWidget() {
     setState(() {
@@ -299,6 +299,38 @@ class _CivListState extends State<CivList> {
                 child: Text(globals.civList[index], style: mediumTextStyle),
               ))
           .toList(),
+    );
+  }
+}
+
+class DraftCard extends StatefulWidget {
+  const DraftCard({Key? key}) : super(key: key);
+
+  @override
+  State<DraftCard> createState() => _DraftCardState();
+}
+
+class _DraftCardState() extends State<DraftCard> {
+  @override
+  Widget build(context) {
+    bool isVisible = context.select<DraftConfiguration, bool>((config) => config.draftResults.empty);
+
+    return Visibility(visible: isVisible,
+     child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Theme.of(context).backgroundColor,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CardTitle(title: "Draft Results"),
+              ), 
+            ],
+          )
+     ),
     );
   }
 }
