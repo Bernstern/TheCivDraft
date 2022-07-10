@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'dart:developer';
@@ -13,6 +15,7 @@ import 'models.dart';
 import 'text/intro.dart';
 
 final Uri url = Uri.parse('https://www.buymeacoffee.com/bernstern');
+
 void _launchUrl() async {
   if (!await launchUrl(url)) throw 'Could not launch $url';
 }
@@ -55,6 +58,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,11 +78,19 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).cardColor,
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Center(
           child: Container(
             alignment: Alignment.center,
             width: math.max(MediaQuery.of(context).size.width * 0.5, 1000),
-            child: Center(child: Column(children: const [IntroBlurb(), SetupCard(), DraftCard()])),
+            child: Center(
+                child: Column(children: [
+              const IntroBlurb(),
+              SetupCard(
+                scrollController: _scrollController,
+              ),
+              const DraftCard()
+            ])),
           ),
         ),
       ),
@@ -140,7 +159,9 @@ class _IntroBlurbState extends State<IntroBlurb> {
 }
 
 class SetupCard extends StatefulWidget {
-  const SetupCard({Key? key}) : super(key: key);
+  SetupCard({Key? key, required this.scrollController}) : super(key: key);
+
+  ScrollController scrollController;
 
   @override
   State<SetupCard> createState() => _SetupCardState();
@@ -227,6 +248,10 @@ class _SetupCardState extends State<SetupCard> {
               child: ElevatedButton(
                 onPressed: () {
                   context.read<DraftConfiguration>().runDraft();
+
+                  // Scroll to the bottom of the page where the results are
+                  widget.scrollController.animateTo(widget.scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
                 },
                 style: buttonStyle,
                 child: Text(
@@ -362,6 +387,9 @@ class _DraftCardState extends State<DraftCard> {
       padding: const EdgeInsets.all(8.0),
       child: Visibility(
         visible: hasResults,
+        maintainSize: true,
+        maintainState: true,
+        maintainAnimation: true,
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
