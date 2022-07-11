@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:math' as math;
 import 'package:civgen/styles.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:responsive_grid_list/responsive_grid_list.dart';
@@ -16,6 +15,7 @@ import 'text/intro.dart';
 
 final Uri url = Uri.parse('https://www.buymeacoffee.com/bernstern');
 
+// Database references
 void _launchUrl() async {
   if (!await launchUrl(url)) throw 'Could not launch $url';
 }
@@ -26,6 +26,10 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  Future<SharedPreferences> initSharedPrefs() async {
+    return await SharedPreferences.getInstance();
+  }
 
   // This widget is the root of your application.
   @override
@@ -272,11 +276,18 @@ class _SetupCardState extends State<SetupCard> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<DraftConfiguration>().loadBansFromDatabase();
+                    },
                     style: buttonStyle,
                     child: Text("Load Bans", style: largeTextStyle),
                   ),
-                  ElevatedButton(onPressed: () {}, style: buttonStyle, child: Text("Save Bans", style: largeTextStyle)),
+                  ElevatedButton(
+                      onPressed: () {
+                        context.read<DraftConfiguration>().writeBansToDatabase();
+                      },
+                      style: buttonStyle,
+                      child: Text("Save Bans", style: largeTextStyle)),
                 ],
               ),
             )

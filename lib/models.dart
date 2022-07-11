@@ -1,13 +1,17 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
 
 class DraftConfiguration extends ChangeNotifier {
   // TODO: Check if there are enough civs left to draft the number of players when banning
 
-  DraftConfiguration({required this.numPlayers, required this.numCivs});
+  DraftConfiguration({
+    required this.numPlayers,
+    required this.numCivs,
+  });
 
   int numPlayers;
   int numCivs;
@@ -98,5 +102,32 @@ class DraftConfiguration extends ChangeNotifier {
     bannedCivs.addAll(draftChoices.values.where((int index) => index >= 0));
     log("Banned civs: $draftChoices");
     notifyListeners();
+  }
+
+  void writeBansToDatabase() {
+    String bans = json.encode(bannedCivs.toList());
+
+    // Write the bans to the shared preferences
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      prefs.setString("bans", bans);
+    });
+
+    log("Bans written to shared prefs. $bans");
+  }
+
+  void loadBansFromDatabase() {
+    // Read the bans from the shared preferences
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      String? bans = prefs.getString("bans");
+      if (bans != null) {
+        // Need to convert this list of strings to a list of ints
+        List<int> bansList = (jsonDecode(bans) as List<dynamic>).cast<int>();
+        bannedCivs = HashSet<int>.from(bansList);
+        log("Bans loaded from shared prefs: $bans");
+        notifyListeners();
+      } else {
+        log("No bans found in shared prefs.");
+      }
+    });
   }
 }
