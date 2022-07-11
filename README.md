@@ -1,5 +1,11 @@
 # The Civ Draft
 
+[![GitHub license](https://img.shields.io/github/license/Bernstern/TheCivDraft?style=for-the-badge)](https://github.com/Bernstern/TheCivDraft/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/Bernstern/TheCivDraft?style=for-the-badge)](https://github.com/Bernstern/TheCivDraft/issues)
+[![GitHub stars](https://img.shields.io/github/stars/Bernstern/TheCivDraft?style=for-the-badge)](https://github.com/Bernstern/TheCivDraft/stargazers)
+
+
+
 The idea behind the Civ Draft came from the issue some friends and I were having with Civ6 Drafts, as we played more and more we didn't want to play the same civs but ended up banning tons of civs, taking tons of time. 
 
 This web app allows for the same draft capabilities as great tools like [CivDrafter](https://civdrafter.com/#/form/playerCount), with the added capability to store bans between runs in the local storage of your browser. 
