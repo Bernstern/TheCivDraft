@@ -245,19 +245,39 @@ class _SetupCardState extends State<SetupCard> {
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.read<DraftConfiguration>().runDraft();
+              child: ResponsiveGridList(
+                minItemWidth: 100,
+                maxItemsPerRow: 4,
+                shrinkWrap: true,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<DraftConfiguration>().resetBans();
+                    },
+                    style: secondaryButtonStyle,
+                    child: Text("Reset Bans", style: largeTextStyle),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<DraftConfiguration>().runDraft();
 
-                  // Scroll to the bottom of the page where the results are
-                  widget.scrollController.animateTo(widget.scrollController.position.maxScrollExtent,
-                      duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
-                },
-                style: buttonStyle,
-                child: Text(
-                  'Draft',
-                  style: largeTextStyle,
-                ),
+                      // Scroll to the bottom of the page where the results are
+                      widget.scrollController.animateTo(widget.scrollController.position.maxScrollExtent,
+                          duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
+                    },
+                    style: buttonStyle,
+                    child: Text(
+                      'Draft',
+                      style: largeTextStyle,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: buttonStyle,
+                    child: Text("Load Bans", style: largeTextStyle),
+                  ),
+                  ElevatedButton(onPressed: () {}, style: buttonStyle, child: Text("Save Bans", style: largeTextStyle)),
+                ],
               ),
             )
           ],
@@ -319,7 +339,8 @@ class CivList extends StatefulWidget {
 class _CivListState extends State<CivList> {
   @override
   Widget build(BuildContext context) {
-    HashSet<int> bannedCivIndices = context.select<DraftConfiguration, HashSet<int>>((config) => config.bannedCivs);
+    var draftConfig = context.watch<DraftConfiguration>();
+    HashSet<int> bannedCivIndices = draftConfig.bannedCivs;
 
     final List civIndexList = Iterable<int>.generate(globals.civList.length).toList();
 
@@ -381,8 +402,6 @@ class _DraftCardState extends State<DraftCard> {
     int numPlayers = draftConfig.numPlayers;
     int numCivs = draftConfig.numCivs;
 
-    log("$draftChoices");
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Visibility(
@@ -404,8 +423,11 @@ class _DraftCardState extends State<DraftCard> {
               ),
               const Padding(
                 padding: EdgeInsets.all(8),
-                child: Text("The following civs were drafted, please select the civs you wish to play in the game.",
-                    style: mediumCopyStyle),
+                child: Text(
+                  "The following civs were drafted, please select the civs you wish to play in the game. Once you have selected a civ, or the random option, for each player, you will be able to ban them from future drafts.",
+                  style: mediumCopyStyle,
+                  textAlign: TextAlign.center,
+                ),
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -416,33 +438,58 @@ class _DraftCardState extends State<DraftCard> {
                         SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: numCivs + 2, childAspectRatio: 3),
                     itemBuilder: (context, index) {
                       return Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 8),
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: () {
-                              int row = index ~/ (numCivs + 2);
-                              int column = index % (numCivs + 2);
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 8),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: () {
+                            int row = index ~/ (numCivs + 2);
+                            int column = index % (numCivs + 2);
 
-                              switch (column) {
-                                // Case where this is the first entry in the row - show the player number
-                                case 0:
-                                  return Text(
-                                    "Player ${row + 1}",
-                                    style: mediumTextStyle,
-                                  );
-                                case 1:
-                                  bool isSelected = draftChoices[row] == -1;
-                                  return _buildDraftCard(context, "Random", row, -1, isSelected);
-                                default:
-                                  int civIndex = draftResults[row][column - 2];
-                                  bool isSelected = draftChoices[row] == civIndex;
-                                  return _buildDraftCard(
-                                      context, globals.civList[civIndex]['nationName'], row, civIndex, isSelected);
-                              }
-                            }(),
-                          ));
+                            // If there are no results yet, return an empty widget
+                            if (!hasResults) {
+                              return Container();
+                            }
+
+                            switch (column) {
+                              // Case where this is the first entry in the row - show the player number
+                              case 0:
+                                return Text(
+                                  "Player ${row + 1}",
+                                  style: mediumTextStyle,
+                                );
+                              case 1:
+                                bool isSelected = draftChoices[row] == -1;
+                                return _buildDraftCard(context, "Random", row, -1, isSelected);
+                              default:
+                                int civIndex = draftResults[row][column - 2];
+                                bool isSelected = draftChoices[row] == civIndex;
+                                return Tooltip(
+                                  message: globals.civList[civIndex]["leaderName"],
+                                  preferBelow: false,
+                                  textStyle: mediumCopyStyle,
+                                  child: _buildDraftCard(
+                                      context, globals.civList[civIndex]['nationName'], row, civIndex, isSelected),
+                                );
+                            }
+                          }(),
+                        ),
+                      );
                     },
                   )),
+              Visibility(
+                visible: draftChoices.length == numPlayers,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ElevatedButton(
+                    style: secondaryButtonStyle,
+                    onPressed: () => {context.read<DraftConfiguration>().banDraftChoices()},
+                    child: Text("Ban Selections", style: largeTextStyle),
+                  ),
+                ),
+              )
             ],
           ),
         ),

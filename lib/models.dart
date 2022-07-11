@@ -40,6 +40,12 @@ class DraftConfiguration extends ChangeNotifier {
     }
   }
 
+  void resetBans() {
+    bannedCivs.clear();
+    log("Bans reset.");
+    notifyListeners();
+  }
+
   void logConfiguration() {
     log("Draft Configuration:");
     log("  numPlayers: $numPlayers");
@@ -84,6 +90,13 @@ class DraftConfiguration extends ChangeNotifier {
 
     log("Selecting civ ${globals.civList[civIndex]}");
     draftChoices[playerNumber] = civIndex;
+    notifyListeners();
+  }
+
+  void banDraftChoices() {
+    // Remove the civs that were selected from the list of banned civs
+    bannedCivs.addAll(draftChoices.values.where((int index) => index >= 0));
+    log("Banned civs: $draftChoices");
     notifyListeners();
   }
 }
