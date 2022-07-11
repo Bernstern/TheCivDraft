@@ -34,10 +34,13 @@
   <link rel="manifest" href="manifest.json">
 
   <!-- Metadata -->
-  <meta property="og:title" content="The Draft" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://thecivdraft.com/" />
-  <meta property="og:image" content="icons/Icon-512.png" />
+  <meta property="og:title" content="${htmlData.chartTitle}" />
+  <meta property="og:description" content="${htmlData.chartDescription}" />
+  <meta property="og:image" content="${htmlData.imageUrl}" />
+  <meta property="og:image:secure" content="${htmlData.imageUrl}" />
+  <meta property="og:url" content="${url}" />
 
   <script>
     // The value below is injected by flutter build, do not touch.
