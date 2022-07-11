@@ -1,16 +1,22 @@
-# civgen
+# The Civ Draft
 
-A new Flutter project.
+The idea behind the Civ Draft came from the issue some friends and I were having with Civ6 Drafts, as we played more and more we didn't want to play the same civs but ended up banning tons of civs, taking tons of time. 
 
-## Getting Started
+This web app allows for the same draft capabilities as great tools like [CivDrafter](https://civdrafter.com/#/form/playerCount), with the added capability to store bans between runs in the local storage of your browser. 
 
-This project is a starting point for a Flutter application.
+## Stack
 
-A few resources to get you started if this is your first Flutter project:
+This tool uses Flutter for the interface and Firebase for hosting. Github Actions are used to automate deployment. 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Contributing
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+If you have a suggestion to make this better, please open an Issue on Github. If you have a fix/improvement of your own feel free to open a pull request and I will help get your ideas into the project!
+
+## Upcoming Improvements 
+
+- Adding a Google integration with Firebase Cloudstore to be able to sync your bans across multiple browsers.
+- Keep track of the results between games, adding statistics and player profiles if demand is sufficient. 
+- Better mobile support and overall improving the UX (adding dark mode)
+
+## Attributions
+- <a href="https://www.flaticon.com/free-icons/country" title="country icons">Country icons created by Chanut-is-Industries - Flaticon</a>
