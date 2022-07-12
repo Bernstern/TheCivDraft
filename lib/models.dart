@@ -26,21 +26,40 @@ class DraftConfiguration extends ChangeNotifier {
   Map<int, int> draftChoices = {};
 
   // Setters for the number of players and civs per player
-  void setNumPlayers(int numPlayers) {
+  bool setNumPlayers(int numPlayers) {
+    if (globals.civList.length - bannedCivs.length <= numPlayers * numCivs) {
+      log("Not enough civs left to change the number of players");
+      return false;
+    }
     this.numPlayers = numPlayers;
+    return true;
   }
 
-  void setNumCivs(int numCivs) {
+  bool setNumCivs(int numCivs) {
+    // Check if setting the number of civs per player is possible
+    if (globals.civList.length - bannedCivs.length <= numPlayers * numCivs) {
+      log("Not enough civs left to modify the number of civs per player");
+      return false;
+    }
     this.numCivs = numCivs;
+    return true;
   }
 
-  void toggleCivBan(int index) {
+  bool toggleCivBan(int index) {
+    // You can always unban a civ, no restriction
     if (bannedCivs.contains(index)) {
       log("Unbanning civ ${globals.civList[index]}");
       bannedCivs.remove(index);
+      return true;
+
+      // You can't ban a civ if you don't have enough civs left to draft the number of players
+    } else if (globals.civList.length - bannedCivs.length <= numPlayers * numCivs) {
+      log("Not enough civs left to ban civ ${globals.civList[index]}");
+      return false;
     } else {
       log("Banning civ ${globals.civList[index]}");
       bannedCivs.add(index);
+      return true;
     }
   }
 

@@ -33,3 +33,4 @@ final ButtonStyle secondaryButtonStyle = ElevatedButton.styleFrom(
   primary: theme.focusColor,
 );
 final ButtonStyle bannedStyle = ElevatedButton.styleFrom(primary: theme.cardColor.withOpacity(0.2));
+final toastColor = theme.focusColor;

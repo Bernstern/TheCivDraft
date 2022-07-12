@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'dart:developer';
@@ -8,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:responsive_grid_list/responsive_grid_list.dart';
+import 'package:oktoast/oktoast.dart';
 
 import 'globals.dart' as globals;
 import 'models.dart';
@@ -43,10 +46,12 @@ class MyApp extends StatelessWidget {
           ),
         )
       ],
-      child: MaterialApp(
-        title: 'Civ Gen',
-        theme: theme,
-        home: const HomePage(title: 'The Draft'),
+      child: OKToast(
+        child: MaterialApp(
+          title: 'Civ Gen',
+          theme: theme,
+          home: const HomePage(title: 'The Draft'),
+        ),
       ),
     );
   }
@@ -214,6 +219,7 @@ class _SetupCardState extends State<SetupCard> {
                         title: "Players",
                         initialValue: currentNumPlayers,
                         updateFunction: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
+                        errorMessage: "Unban civs to increase the number of players.",
                         maxValue: globals.maxPlayers,
                       ),
                     ],
@@ -231,6 +237,7 @@ class _SetupCardState extends State<SetupCard> {
                         title: "Civs",
                         initialValue: currentNumCivs,
                         updateFunction: (value) => context.read<DraftConfiguration>().setNumCivs(value),
+                        errorMessage: "Unban civs to increase the number of civs per player.",
                         maxValue: globals.maxCivs,
                       ),
                     ],
@@ -300,13 +307,19 @@ class _SetupCardState extends State<SetupCard> {
 
 class LabeledSlider extends StatefulWidget {
   const LabeledSlider(
-      {Key? key, required this.title, required this.initialValue, required this.updateFunction, required this.maxValue})
+      {Key? key,
+      required this.title,
+      required this.initialValue,
+      required this.updateFunction,
+      required this.maxValue,
+      required this.errorMessage})
       : super(key: key);
 
   final String title;
   final int initialValue;
   final int maxValue;
   final Function updateFunction;
+  final String errorMessage;
 
   @override
   State<LabeledSlider> createState() => _LabeledSliderState();
@@ -331,10 +344,14 @@ class _LabeledSliderState extends State<LabeledSlider> {
       activeColor: Theme.of(context).focusColor,
       thumbColor: Theme.of(context).cardColor,
       onChanged: (double value) {
-        setState(() {
-          _currentValue = value.round().toDouble();
-        });
-        widget.updateFunction(value.toInt());
+        // If the update function returns False, show an error toast
+        if (!widget.updateFunction(value.toInt())) {
+          showErrorToast(widget.errorMessage);
+        } else {
+          setState(() {
+            _currentValue = value.round().toDouble();
+          });
+        }
       },
     );
   }
@@ -367,7 +384,10 @@ class _CivListState extends State<CivList> {
                 preferBelow: false,
                 child: OutlinedButton(
                   onPressed: () => setState(() {
-                    context.read<DraftConfiguration>().toggleCivBan(index);
+                    // If toggling the ban returns false, it means we are at the limit of civs we can ban
+                    if (!context.read<DraftConfiguration>().toggleCivBan(index)) {
+                      showErrorToast("Not enough civs left to ban with the current configuration.");
+                    }
                   }),
                   style: bannedCivIndices.contains(index) ? bannedStyle : buttonStyle,
                   child: Text(globals.civList[index]['nationName'],
@@ -377,6 +397,18 @@ class _CivListState extends State<CivList> {
           .toList(),
     );
   }
+}
+
+void showErrorToast(String message) {
+  showToast(
+    message,
+    textStyle: largeTextStyle,
+    backgroundColor: toastColor,
+    textPadding: const EdgeInsets.all(8.0),
+    dismissOtherToast: true,
+    duration: const Duration(seconds: 5),
+    radius: 20,
+  );
 }
 
 class DraftCard extends StatefulWidget {
