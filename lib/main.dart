@@ -36,6 +36,7 @@ class DraftApp extends StatelessWidget {
         child: MaterialApp(
           title: "Winter Games Draft",
           initialRoute: "/",
+          theme: theme,
           routes: {
             "/": (context) => const SetupPage(),
           },
@@ -48,14 +49,39 @@ class SetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: FractionallySizedBox(
           alignment: Alignment.center,
+          // TODO: Make this responsive to the screen size, basically have a min and max width
           widthFactor: 0.5,
-          child: NumberPicker(update: () => {}, text: "Test", defaultValue: 3, min: 1, max: 3),
+          // TODO: Unpack all our values here instead of duplicating the code
+          child: NumberPicker(
+              update: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
+              text: pickPlayers,
+              defaultValue: context.read<DraftConfiguration>().numPlayers,
+              min: 1,
+              max: 3),
         ),
       ),
+    );
+  }
+}
+
+class SetupContainer extends StatelessWidget {
+  const SetupContainer({Key? key, required this.child}) : super(key: key);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: theme.primaryColorDark,
+      ),
+      child: child,
     );
   }
 }
@@ -68,15 +94,7 @@ class RoundedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      //
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: theme.primaryColorDark,
-      ),
-      child: Text(text, style: mediumTextStyle),
-    );
+    return SetupContainer(child: Text(text, style: mediumTextStyle));
   }
 }
 
@@ -104,6 +122,8 @@ class NumberPicker extends StatefulWidget {
   _NumberPickerState createState() => _NumberPickerState();
 }
 
+// TODO: Add the notion of the widget that is in focus to take keystroke inputs
+//  for the number picker
 class _NumberPickerState extends State<NumberPicker> {
   int _value = 0;
 
@@ -115,31 +135,41 @@ class _NumberPickerState extends State<NumberPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(widget.text, style: mediumTextStyle),
-        const SizedBox(width: 8.0),
-        IconButton(
-          icon: const Icon(Icons.remove),
-          onPressed: () {
-            setState(() {
-              _value = math.max(_value - 1, widget.min);
-              widget.update(_value);
-            });
-          },
-        ),
-        Text(_value.toString(), style: mediumTextStyle),
-        IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            setState(() {
-              _value = math.min(_value + 1, widget.max);
-              widget.update(_value);
-            });
-          },
-        ),
-      ],
+    return SetupContainer(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.text, style: mediumTextStyle),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  setState(() {
+                    _value = math.max(_value - 1, widget.min);
+                    widget.update(_value);
+                  });
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(),
+                child: Text(_value.toString(), style: mediumTextStyle),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_forward_ios,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _value = math.min(_value + 1, widget.max);
+                    widget.update(_value);
+                  });
+                },
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
