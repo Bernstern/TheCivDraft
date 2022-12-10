@@ -48,12 +48,13 @@ class SetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Setup"),
-      ),
-      body: const Center(
-        child: Text("Setup"),
+    return const Scaffold(
+      body: Center(
+        child: FractionallySizedBox(
+          alignment: Alignment.center,
+          widthFactor: 0.5,
+          child: RoundedBox(text: introText),
+        ),
       ),
     );
   }
@@ -69,17 +70,12 @@ class RoundedBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8.0),
+      //
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(8.0),
+        color: theme.primaryColorDark,
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 20.0,
-          color: Colors.black,
-        ),
-      ),
+      child: Text(text, style: mediumTextStyle),
     );
   }
 }
