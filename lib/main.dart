@@ -56,13 +56,17 @@ class SetupPage extends StatelessWidget {
           alignment: Alignment.center,
           // TODO: Make this responsive to the screen size, basically have a min and max width
           widthFactor: 0.5,
-          // TODO: Unpack all our values here instead of duplicating the code
-          child: NumberPicker(
-              update: (value) => context.read<DraftConfiguration>().setNumPlayers(value),
-              text: pickPlayers,
-              defaultValue: context.read<DraftConfiguration>().numPlayers,
-              min: 1,
-              max: 3),
+          child: Column(
+            children: [
+              for (var config in context.read<DraftConfiguration>().getSetupConfig)
+                NumberPicker(
+                    update: config.update ?? (value) => log("No update function"),
+                    text: config.text,
+                    defaultValue: config.value,
+                    min: config.min,
+                    max: config.max),
+            ],
+          ),
         ),
       ),
     );

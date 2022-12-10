@@ -1,29 +1,68 @@
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'globals.dart' as globals;
+
+import 'package:civgen/text/intro.dart';
 
 // Set default number of players, number of games, number of bans,
-const int defaultNumPlayers = 3;
-const int defaultNumGames = 3;
-const int defaultNumBans = 2;
+class SetupConfig {
+  SetupConfig({required this.value, required this.min, required this.max, required this.text, this.update});
+
+  int value;
+  int min;
+  int max;
+  String text;
+  // TODO: We might be able to have this just be a setter and then have the
+  //  change notifier notify the listeners only on a save
+  Function? update;
+}
+
+SetupConfig initialSetupPlayers = SetupConfig(
+  value: 3,
+  min: 2,
+  max: 8,
+  text: pickPlayers,
+);
+
+SetupConfig initialSetupGames = SetupConfig(
+  value: 4,
+  min: 1,
+  max: 5,
+  text: pickGames,
+);
+
+SetupConfig initialSetupBans = SetupConfig(
+  value: 2,
+  min: 1,
+  max: 4,
+  text: pickBans,
+);
 
 class DraftConfiguration extends ChangeNotifier {
-  int numPlayers = defaultNumPlayers;
-  int numGames = defaultNumGames;
-  int numBans = defaultNumBans;
+  DraftConfiguration() {
+    // Link in the update functions to the setup configs
+    setupPlayers.update = setNumPlayers;
+    setupGames.update = setNumGames;
+    setupBans.update = setNumBans;
+  }
+
+  SetupConfig setupPlayers = initialSetupPlayers;
+  SetupConfig setupGames = initialSetupGames;
+  SetupConfig setupBans = initialSetupBans;
+
+  List<SetupConfig> get getSetupConfig => [
+        setupPlayers,
+        setupGames,
+        setupBans,
+      ];
 
   void setNumPlayers(int num) {
-    numPlayers = num;
+    setupPlayers.value = num;
   }
 
   void setNumGames(int num) {
-    numGames = num;
+    setupGames.value = num;
   }
 
   void setNumBans(int num) {
-    numBans = num;
+    setupBans.value = num;
   }
 }
