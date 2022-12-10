@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:civgen/styles.dart';
@@ -120,8 +122,32 @@ class _NumberPickerState extends State<NumberPicker> {
   }
 }
 
-class SetupPage extends StatelessWidget {
+class SetupPage extends StatefulWidget {
   const SetupPage({Key? key}) : super(key: key);
+
+  @override
+  _SetupPageState createState() => _SetupPageState();
+}
+
+class _SetupPageState extends State<SetupPage> {
+  int _activeCardIndex = 0;
+  int _maxCardIndex = 0;
+
+  void nextCard() {
+    if (_activeCardIndex < _maxCardIndex - 1) {
+      setState(() {
+        _activeCardIndex++;
+      });
+    }
+  }
+
+  void previousCard() {
+    if (_activeCardIndex > 0) {
+      setState(() {
+        _activeCardIndex--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +164,11 @@ class SetupPage extends StatelessWidget {
             max: config.max),
     ];
 
-    // Keep track of which card is active
-    int activeCard = 2;
+    // Update the max card index
+    _maxCardIndex = setupCards.length;
 
     // Visible cards will be the active card and all cards prior
-    List<Widget> previousCards = setupCards.sublist(0, activeCard);
+    List<Widget> previousCards = setupCards.sublist(0, _activeCardIndex);
 
     // Add an opacity to the inactive cards
     for (int i = 0; i < previousCards.length; i++) {
@@ -152,14 +178,17 @@ class SetupPage extends StatelessWidget {
       );
     }
 
+    // TODO: Make it so that up and down arrow keys can be used to change the active card
+    //  window.onKeyPress.listen((KeyboardEvent e) {
+    //   log(e.charCode.toString() + " " + new String.fromCharCode(e.charCode));
+    // });
+
     return Scaffold(
         body: Center(
             child: FractionallySizedBox(
                 alignment: Alignment.center,
                 // TODO: Make this responsive to the screen size, basically have a min and max width
                 widthFactor: 0.5,
-                // Create a column where the active card is centered on the screen and the previous cards
-                //   are above with icons for up and down on the right of the active card
                 child: LayoutGrid(columnSizes: [
                   1.fr,
                   50.px
@@ -175,19 +204,31 @@ class SetupPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: previousCards,
                       )),
-                  GridPlacement(columnStart: 0, rowStart: 1, child: setupCards[activeCard]),
+                  GridPlacement(columnStart: 0, rowStart: 1, child: setupCards[_activeCardIndex]),
                   GridPlacement(
                       columnStart: 1,
                       rowStart: 1,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Icon(
-                            Icons.keyboard_arrow_up,
-                            color: theme.primaryColorDark,
-                            size: 40,
+                          IconButton(
+                            onPressed: () => previousCard(),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.keyboard_arrow_up,
+                              color: theme.primaryColorDark,
+                              size: 40,
+                            ),
                           ),
-                          Icon(Icons.keyboard_arrow_down, color: theme.primaryColorDark, size: 40)
+                          IconButton(
+                            onPressed: () => nextCard(),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: theme.primaryColorDark,
+                              size: 40,
+                            ),
+                          ),
                         ],
                       ))
                 ]))));
