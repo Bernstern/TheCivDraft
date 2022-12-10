@@ -106,7 +106,7 @@ class SetupPage extends StatelessWidget {
                       columnStart: 1,
                       rowStart: 1,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.keyboard_arrow_up,
