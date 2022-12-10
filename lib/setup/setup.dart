@@ -9,13 +9,18 @@ class SetupContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: theme.primaryColorDark,
+    return Padding(
+      // This is the padding around the containter
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        // This is the padding inside the container
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: theme.primaryColorDark,
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
