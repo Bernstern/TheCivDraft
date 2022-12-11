@@ -1,8 +1,9 @@
-import 'dart:html';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:civgen/styles.dart';
+import 'package:flutter/services.dart';
 
 import 'dart:developer';
 import 'package:provider/provider.dart';
@@ -211,6 +212,14 @@ class _SetupPageState extends State<SetupPage> {
             child: setupCards[i]),
       );
     }
+
+    window.onKeyData = (event) {
+      if (event.logical == LogicalKeyboardKey.arrowDown) {
+        nextCard();
+      } else if (event.logical == LogicalKeyboardKey.arrowUp) {
+        previousCard();
+      }
+    };
 
     // TODO: Make it so that up and down arrow keys can be used to change the active card
     return Scaffold(
