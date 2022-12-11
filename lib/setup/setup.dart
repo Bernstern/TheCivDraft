@@ -124,7 +124,6 @@ class _NumberPickerState extends State<NumberPicker> {
 
 class SetupPage extends StatefulWidget {
   const SetupPage({Key? key}) : super(key: key);
-
   @override
   _SetupPageState createState() => _SetupPageState();
 }
@@ -132,6 +131,11 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void nextCard() {
     if (_activeCardIndex < _maxCardIndex - 1) {
@@ -154,7 +158,8 @@ class _SetupPageState extends State<SetupPage> {
     // Create a list of all the widgets that will be displayed, the intro blurb
     // and the setup widgets
     List<Widget> setupCards = [
-      const RoundedBox(text: introText),
+      // TODO: Make a modal or something that ops the intro text block up
+      // const RoundedBox(text: introText),
       for (var config in context.read<DraftConfiguration>().getSetupConfig)
         NumberPicker(
             update: config.update ?? (value) => log("No update function"),
@@ -167,21 +172,30 @@ class _SetupPageState extends State<SetupPage> {
     // Update the max card index
     _maxCardIndex = setupCards.length;
 
-    // Visible cards will be the active card and all cards prior
-    List<Widget> previousCards = setupCards.sublist(0, _activeCardIndex);
-
-    // Add an opacity to the inactive cards
-    for (int i = 0; i < previousCards.length; i++) {
-      previousCards[i] = Opacity(
-        opacity: 0.5,
-        child: previousCards[i],
+    // Caclulate the offset for each card - active is 0, the rest are offset by
+    // the distance from the active card index
+    for (int i = 0; i < _maxCardIndex; i++) {
+      setupCards[i] = AnimatedSlide(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        offset: Offset(0, 1.5 * (i - _activeCardIndex)),
+        child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            opacity: i < _activeCardIndex ? .5 : (i == _activeCardIndex ? 1 : 0),
+            child: setupCards[i]),
       );
     }
 
+    // // Linear function up to the active card for opacity, then 1 for the active card, then 0 for the rest
+    // for (int i = 0; i < _maxCardIndex; i++) {
+    //   setupCards[i] = Opacity(
+    //     opacity: math.min(1, math.max(0, (i - _activeCardIndex).abs() + 1)),
+    //     child: setupCards[i],
+    //   );
+    // }
+
     // TODO: Make it so that up and down arrow keys can be used to change the active card
-    //  window.onKeyPress.listen((KeyboardEvent e) {
-    //   log(e.charCode.toString() + " " + new String.fromCharCode(e.charCode));
-    // });
 
     return Scaffold(
         body: Center(
@@ -192,45 +206,38 @@ class _SetupPageState extends State<SetupPage> {
                 child: LayoutGrid(columnSizes: [
                   1.fr,
                   50.px
-                ], rowSizes: [
-                  1.fr,
-                  auto,
-                  1.fr
+                ], rowSizes: const [
+                  auto
                 ], children: [
-                  GridPlacement(
-                      columnStart: 0,
-                      rowStart: 0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: previousCards,
-                      )),
-                  GridPlacement(columnStart: 0, rowStart: 1, child: setupCards[_activeCardIndex]),
-                  GridPlacement(
-                      columnStart: 1,
-                      rowStart: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () => previousCard(),
-                            padding: EdgeInsets.zero,
-                            icon: Icon(
-                              Icons.keyboard_arrow_up,
-                              color: theme.primaryColorDark,
-                              size: 40,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () => nextCard(),
-                            padding: EdgeInsets.zero,
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              color: theme.primaryColorDark,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ))
+                  Center(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: setupCards,
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () => previousCard(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          Icons.keyboard_arrow_up,
+                          color: theme.primaryColorDark,
+                          size: 40,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => nextCard(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: theme.primaryColorDark,
+                          size: 40,
+                        ),
+                      ),
+                    ],
+                  ),
                 ]))));
   }
 }

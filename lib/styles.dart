@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // TODO: Add a theme for dark mode
 // TODO: Do our icon and text themes properly
 ThemeData theme = ThemeData(
-  backgroundColor: const Color(0xFFCFE8FF),
+  scaffoldBackgroundColor: const Color(0xFFCFE8FF),
   primaryColorDark: const Color(0xFF2F4F4F),
   primaryColorLight: const Color(0xFFFFFFFF),
   primaryColor: Colors.white,

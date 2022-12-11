@@ -3,6 +3,6 @@ const String introText =
 
 const String pickPlayers = "How many players are in the draft?";
 
-const String pickGames = "How many games are you polaying?";
+const String pickGames = "How many games are you playing?";
 
 const String pickBans = "How many bans can each person pick?";
