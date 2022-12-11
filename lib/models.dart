@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:civgen/text/intro.dart';
@@ -62,14 +64,17 @@ class DraftConfiguration extends ChangeNotifier {
 
   void setNumPlayers(int num) {
     setupPlayers.value = num;
+    log("Num players: $num");
   }
 
   void setNumGames(int num) {
     setupGames.value = num;
+    log("Num games: $num");
   }
 
   void setNumBans(int num) {
     setupBans.value = num;
+    log("Num bans: $num");
   }
 
   void setActivePage(VisiblePage newPage) {
