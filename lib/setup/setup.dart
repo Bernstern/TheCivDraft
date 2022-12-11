@@ -1,8 +1,9 @@
-import 'dart:html';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:civgen/styles.dart';
+import 'package:flutter/services.dart';
 
 import 'dart:developer';
 import 'package:provider/provider.dart';
@@ -11,10 +12,12 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:civgen/text/intro.dart';
 import 'package:civgen/models.dart';
 
-class SetupContainer extends StatelessWidget {
-  const SetupContainer({Key? key, required this.child}) : super(key: key);
+class BasicContainer extends StatelessWidget {
+  const BasicContainer({Key? key, required this.child, required this.color})
+      : super(key: key);
 
   final Widget child;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class SetupContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
-          color: theme.primaryColorDark,
+          color: color,
         ),
         child: child,
       ),
@@ -43,7 +46,8 @@ class SetupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SetupContainer(
+    return BasicContainer(
+      color: theme.hintColor,
       child: TextButton(
         onPressed: () => onPressed(),
         child: Text(text, style: mediumTextStyle),
@@ -60,12 +64,13 @@ class RoundedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SetupContainer(
+    return BasicContainer(
+        color: theme.primaryColorDark,
         child: Text(
-      text,
-      style: mediumTextStyle,
-      textAlign: TextAlign.center,
-    ));
+          text,
+          style: mediumTextStyle,
+          textAlign: TextAlign.center,
+        ));
   }
 }
 
@@ -106,7 +111,8 @@ class _NumberPickerState extends State<NumberPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return SetupContainer(
+    return BasicContainer(
+      color: theme.primaryColorDark,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -199,11 +205,11 @@ class _SetupPageState extends State<SetupPage> {
     // the distance from the active card index
     for (int i = 0; i < _maxCardIndex; i++) {
       setupCards[i] = AnimatedSlide(
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 1000),
         curve: Curves.easeInOut,
         offset: Offset(0, 1.5 * (i - _activeCardIndex)),
         child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut,
             opacity: i < _activeCardIndex
                 ? .5
@@ -215,7 +221,6 @@ class _SetupPageState extends State<SetupPage> {
             child: setupCards[i]),
       );
     }
-
     // TODO: Make it so that up and down arrow keys can be used to change the active card
     return Scaffold(
         body: Center(
@@ -264,19 +269,20 @@ class _SetupPageState extends State<SetupPage> {
                   ),
                 ])),
           ),
+          // TODO: Make this fade out instead of just disappearing
           Visibility(
             visible: _showIntro,
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              FractionallySizedBox(
+              const FractionallySizedBox(
                   widthFactor: 0.75, child: RoundedBox(text: introText)),
-              TextButton(
+              SetupButton(
                   onPressed: () => {
                         setState(
-                          () => {this._showIntro = false},
+                          () => {_showIntro = false},
                         )
                       },
-                  child: RoundedBox(text: "Start Drafting")),
+                  text: "Start Drafting"),
             ]),
           ),
         ],
