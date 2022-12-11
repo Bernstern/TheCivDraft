@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: any
   oktoast: ^3.2.0
   flutter_layout_grid: ^2.0.1
+  url_strategy: ^0.2.0
 
 dev_dependencies:
   flutter_test:

@@ -158,7 +158,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
-  bool _showIntro = false;
+  bool _showIntro = true;
 
   @override
   void initState() {
