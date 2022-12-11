@@ -208,7 +208,13 @@ class _SetupPageState extends State<SetupPage> {
         child: AnimatedOpacity(
             duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut,
-            opacity: i < _activeCardIndex ? .5 : (i == _activeCardIndex ? 1 : 0),
+            opacity: i < _activeCardIndex
+                ? .5
+                : (i == _activeCardIndex)
+                    ? 1
+                    : (i == 3 && _activeCardIndex == 2)
+                        ? 1
+                        : 0,
             child: setupCards[i]),
       );
     }
@@ -284,7 +290,12 @@ class _SetupPageState extends State<SetupPage> {
           visible: _activeCardIndex == _maxCardIndex - 1,
           child: Padding(
             padding: const EdgeInsets.only(bottom: 40),
-            child: SetupButton(text: 'Continue', onPressed: () => {log('hello')}),
+            child: SetupButton(
+                text: 'Continue',
+                onPressed: () => {
+                      // TODO: Set the settings in the config
+                      context.read<DraftConfiguration>().setActivePage(VisiblePage.bans)
+                    }),
           ),
         ),
       ),

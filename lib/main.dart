@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:civgen/bans/bans.dart';
 import 'package:civgen/setup/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:civgen/styles.dart';
@@ -29,7 +30,16 @@ class DraftApp extends StatelessWidget {
           initialRoute: "/",
           theme: theme,
           routes: {
-            "/": (context) => const SetupPage(),
+            "/": (context) => Consumer<DraftConfiguration>(
+                  builder: (context, draftConfig, child) {
+                    switch (draftConfig.page) {
+                      case VisiblePage.setup:
+                        return const SetupPage();
+                      case VisiblePage.bans:
+                        return const BansPage();
+                    }
+                  },
+                ),
           },
         ));
   }
