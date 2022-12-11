@@ -35,7 +35,8 @@ class SetupContainer extends StatelessWidget {
 }
 
 class SetupButton extends StatelessWidget {
-  const SetupButton({Key? key, required this.text, required this.onPressed}) : super(key: key);
+  const SetupButton({Key? key, required this.text, required this.onPressed})
+      : super(key: key);
 
   final String text;
   final Function onPressed;
@@ -153,7 +154,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
-  bool _showIntro = true;
+  bool _showIntro = false;
 
   @override
   void initState() {
@@ -161,7 +162,7 @@ class _SetupPageState extends State<SetupPage> {
   }
 
   void nextCard() {
-    if (_activeCardIndex < _maxCardIndex - 1) {
+    if (_activeCardIndex < _maxCardIndex - 2) {
       setState(() {
         _activeCardIndex++;
       });
@@ -188,6 +189,7 @@ class _SetupPageState extends State<SetupPage> {
             defaultValue: config.value,
             min: config.min,
             max: config.max),
+      SetupButton(text: 'Continue', onPressed: () => {log('hello')})
     ];
 
     // Update the max card index
@@ -203,7 +205,13 @@ class _SetupPageState extends State<SetupPage> {
         child: AnimatedOpacity(
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeInOut,
-            opacity: i < _activeCardIndex ? .5 : (i == _activeCardIndex ? 1 : 0),
+            opacity: i < _activeCardIndex
+                ? .5
+                : (i == _activeCardIndex)
+                    ? 1
+                    : (i == 3 && _activeCardIndex == 2)
+                        ? 1
+                        : 0,
             child: setupCards[i]),
       );
     }
@@ -258,8 +266,10 @@ class _SetupPageState extends State<SetupPage> {
           ),
           Visibility(
             visible: _showIntro,
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              FractionallySizedBox(widthFactor: 0.75, child: RoundedBox(text: introText)),
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FractionallySizedBox(
+                  widthFactor: 0.75, child: RoundedBox(text: introText)),
               TextButton(
                   onPressed: () => {
                         setState(

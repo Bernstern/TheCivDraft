@@ -44,7 +44,7 @@ class PageState extends StatefulWidget {
 }
 
 class _PageStateState extends State<PageState> {
-  int page = 1;
+  int page = 0;
   @override
   Widget build(BuildContext context) {
     switch (page) {
