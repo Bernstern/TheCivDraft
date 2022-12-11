@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:civgen/bans/bans.dart';
 import 'package:civgen/setup/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:civgen/styles.dart';
@@ -29,8 +30,30 @@ class DraftApp extends StatelessWidget {
           initialRoute: "/",
           theme: theme,
           routes: {
-            "/": (context) => const SetupPage(),
+            "/": (context) => const PageState(),
           },
         ));
+  }
+}
+
+class PageState extends StatefulWidget {
+  const PageState({super.key});
+
+  @override
+  State<PageState> createState() => _PageStateState();
+}
+
+class _PageStateState extends State<PageState> {
+  int page = 1;
+  @override
+  Widget build(BuildContext context) {
+    switch (page) {
+      case 0:
+        return SetupPage();
+      case 1:
+        return BansPage();
+      default:
+        return SetupPage();
+    }
   }
 }
