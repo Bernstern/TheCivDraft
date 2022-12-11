@@ -42,7 +42,12 @@ class RoundedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SetupContainer(child: Text(text, style: mediumTextStyle));
+    return SetupContainer(
+        child: Text(
+      text,
+      style: mediumTextStyle,
+      textAlign: TextAlign.center,
+    ));
   }
 }
 
@@ -131,6 +136,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
+  bool _showIntro = true;
 
   @override
   void initState() {
@@ -158,8 +164,6 @@ class _SetupPageState extends State<SetupPage> {
     // Create a list of all the widgets that will be displayed, the intro blurb
     // and the setup widgets
     List<Widget> setupCards = [
-      // TODO: Make a modal or something that ops the intro text block up
-      // const RoundedBox(text: introText),
       for (var config in context.read<DraftConfiguration>().getSetupConfig)
         NumberPicker(
             update: config.update ?? (value) => log("No update function"),
@@ -187,20 +191,15 @@ class _SetupPageState extends State<SetupPage> {
       );
     }
 
-    // // Linear function up to the active card for opacity, then 1 for the active card, then 0 for the rest
-    // for (int i = 0; i < _maxCardIndex; i++) {
-    //   setupCards[i] = Opacity(
-    //     opacity: math.min(1, math.max(0, (i - _activeCardIndex).abs() + 1)),
-    //     child: setupCards[i],
-    //   );
-    // }
-
     // TODO: Make it so that up and down arrow keys can be used to change the active card
-
     return Scaffold(
         body: Center(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Visibility(
+            visible: !_showIntro,
             child: FractionallySizedBox(
-                alignment: Alignment.center,
                 // TODO: Make this responsive to the screen size, basically have a min and max width
                 widthFactor: 0.5,
                 child: LayoutGrid(columnSizes: [
@@ -238,6 +237,23 @@ class _SetupPageState extends State<SetupPage> {
                       ),
                     ],
                   ),
-                ]))));
+                ])),
+          ),
+          Visibility(
+            visible: _showIntro,
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FractionallySizedBox(widthFactor: 0.75, child: RoundedBox(text: introText)),
+              TextButton(
+                  onPressed: () => {
+                        setState(
+                          () => {this._showIntro = false},
+                        )
+                      },
+                  child: RoundedBox(text: "Start Drafting")),
+            ]),
+          ),
+        ],
+      ),
+    ));
   }
 }
