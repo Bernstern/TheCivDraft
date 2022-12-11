@@ -213,14 +213,6 @@ class _SetupPageState extends State<SetupPage> {
       );
     }
 
-    window.onKeyData = (event) {
-      if (event.logical == LogicalKeyboardKey.arrowDown) {
-        nextCard();
-      } else if (event.logical == LogicalKeyboardKey.arrowUp) {
-        previousCard();
-      }
-    };
-
     // TODO: Make it so that up and down arrow keys can be used to change the active card
     return Scaffold(
         body: Center(
