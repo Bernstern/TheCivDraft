@@ -158,7 +158,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
-  bool _showIntro = true;
+  bool _showIntro = false;
 
   @override
   void initState() {
@@ -212,71 +212,83 @@ class _SetupPageState extends State<SetupPage> {
             child: setupCards[i]),
       );
     }
-
     // TODO: Make it so that up and down arrow keys can be used to change the active card
     return Scaffold(
-        body: Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Visibility(
-            visible: !_showIntro,
-            child: FractionallySizedBox(
-                // TODO: Make this responsive to the screen size, basically have a min and max width
-                widthFactor: 0.5,
-                child: LayoutGrid(columnSizes: [
-                  1.fr,
-                  50.px
-                ], rowSizes: const [
-                  auto
-                ], children: [
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: setupCards,
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Visibility(
+              visible: !_showIntro,
+              child: FractionallySizedBox(
+                  // TODO: Make this responsive to the screen size, basically have a min and max width
+                  widthFactor: 0.5,
+                  child: LayoutGrid(columnSizes: [
+                    1.fr,
+                    50.px
+                  ], rowSizes: const [
+                    auto
+                  ], children: [
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: setupCards,
+                      ),
                     ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () => previousCard(),
-                        padding: EdgeInsets.zero,
-                        icon: Icon(
-                          Icons.keyboard_arrow_up,
-                          color: theme.primaryColorDark,
-                          size: 40,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () => previousCard(),
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.keyboard_arrow_up,
+                            color: theme.primaryColorDark,
+                            size: 40,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () => nextCard(),
-                        padding: EdgeInsets.zero,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: theme.primaryColorDark,
-                          size: 40,
+                        IconButton(
+                          onPressed: () => nextCard(),
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: theme.primaryColorDark,
+                            size: 40,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ])),
-          ),
-          // TODO: Make this fade out instead of just disappearing
-          Visibility(
-            visible: _showIntro,
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const FractionallySizedBox(widthFactor: 0.75, child: RoundedBox(text: introText)),
-              SetupButton(
-                  onPressed: () => {
-                        setState(
-                          () => {_showIntro = false},
-                        )
-                      },
-                  text: "Start Drafting"),
-            ]),
-          ),
-        ],
+                      ],
+                    ),
+                  ])),
+            ),
+            // TODO: Make this fade out instead of just disappearing
+            Visibility(
+              visible: _showIntro,
+              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const FractionallySizedBox(widthFactor: 0.75, child: RoundedBox(text: introText)),
+                SetupButton(
+                    onPressed: () => {
+                          setState(
+                            () => {_showIntro = false},
+                          )
+                        },
+                    text: "Start Drafting"),
+              ]),
+            ),
+          ],
+        ),
       ),
-    ));
+      floatingActionButton: AnimatedOpacity(
+        duration: const Duration(milliseconds: 1000),
+        opacity: _activeCardIndex != _maxCardIndex - 1 ? 0 : 1,
+        child: Visibility(
+          visible: _activeCardIndex == _maxCardIndex - 1,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 40),
+            child: SetupButton(text: 'Continue', onPressed: () => {log('hello')}),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
   }
 }
