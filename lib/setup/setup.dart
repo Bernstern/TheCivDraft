@@ -34,6 +34,23 @@ class SetupContainer extends StatelessWidget {
   }
 }
 
+class SetupButton extends StatelessWidget {
+  const SetupButton({Key? key, required this.text, required this.onPressed}) : super(key: key);
+
+  final String text;
+  final Function onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SetupContainer(
+      child: TextButton(
+        onPressed: () => onPressed(),
+        child: Text(text, style: mediumTextStyle),
+      ),
+    );
+  }
+}
+
 // Stateless widget is just a box with rounded corners and text and is noninteractive
 class RoundedBox extends StatelessWidget {
   const RoundedBox({Key? key, required this.text}) : super(key: key);
