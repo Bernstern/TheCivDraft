@@ -35,9 +35,10 @@ class DraftApp extends StatelessWidget {
             "/": (context) => Consumer<DraftConfiguration>(
                   builder: (context, draftConfig, child) {
                     switch (draftConfig.page) {
-                      case VisiblePage.setup:
-                        return const SetupPage();
-                      case VisiblePage.bans:
+                      // case VisiblePage.setup:
+                      //   return const SetupPage();
+                      // case VisiblePage.bans:
+                      default:
                         return const BansPage();
                     }
                   },
