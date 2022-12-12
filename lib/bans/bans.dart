@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:civgen/globals.dart';
+import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 class BansPage extends StatefulWidget {
   const BansPage({super.key});
@@ -30,7 +31,19 @@ class BansText extends StatefulWidget {
 class _BansTextState extends State<BansText> {
   @override
   Widget build(BuildContext context) {
-    Padding test = nationChip('the wife, susan', 'Icon_civilization_america.webp');
+    List<Container> civChips = [];
+    for (var civ in civList) {
+      civChips.add(Container(child: nationChip(civ["leaderName"], 'Icon_civilization_america.webp')));
+    }
+
+    ResponsiveGridList grid = ResponsiveGridList(
+      rowMainAxisAlignment: MainAxisAlignment.center,
+      shrinkWrap: true,
+      minItemWidth: 225,
+      horizontalGridSpacing: 8,
+      verticalGridSpacing: 8,
+      children: civChips,
+    );
 
     return MaterialApp(
       title: 'bans',
@@ -39,7 +52,7 @@ class _BansTextState extends State<BansText> {
           title: const Text('ban me'),
         ),
         body: Center(
-          child: test,
+          child: FractionallySizedBox(widthFactor: .6, child: grid),
         ),
       ),
     );
