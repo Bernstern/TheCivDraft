@@ -34,7 +34,7 @@ class NationChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted");
+    log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted)");
 
     // If the chip is locked or highlighted, it should be inactive
     if (chipIsHighlighted) {
@@ -43,7 +43,7 @@ class NationChip extends StatelessWidget {
       boxShadow = [];
     } else if (chipIsLocked) {
       chipColor = theme.disabledColor;
-      textColor = Color.fromARGB(255, 92, 92, 92);
+      textColor = const Color.fromARGB(255, 92, 92, 92);
       boxShadow = [];
     }
 
