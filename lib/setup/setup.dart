@@ -12,6 +12,8 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:civgen/text/intro.dart';
 import 'package:civgen/models.dart';
 
+import '../shared/submit_button.dart';
+
 // TODO: Make the background have a hexagon pattern that maybe moves?
 //  https://pub.dev/packages/hexagon
 // import 'package:hexagon/hexagon.dart';
@@ -35,24 +37,6 @@ class BasicContainer extends StatelessWidget {
           color: color,
         ),
         child: child,
-      ),
-    );
-  }
-}
-
-class SetupButton extends StatelessWidget {
-  const SetupButton({Key? key, required this.text, required this.onPressed}) : super(key: key);
-
-  final String text;
-  final Function onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return BasicContainer(
-      color: theme.hintColor,
-      child: TextButton(
-        onPressed: () => onPressed(),
-        child: Text(text, style: mediumTextStyle),
       ),
     );
   }
@@ -270,38 +254,13 @@ class _SetupPageState extends State<SetupPage> {
                     ),
                   ])),
             ),
-            // TODO: Make this fade out instead of just disappearing
-            Visibility(
-              visible: _showIntro,
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const FractionallySizedBox(widthFactor: 0.75, child: RoundedBox(text: introText)),
-                SetupButton(
-                    onPressed: () => {
-                          setState(
-                            () => {_showIntro = false},
-                          )
-                        },
-                    text: "Start Drafting"),
-              ]),
-            ),
           ],
         ),
       ),
-      floatingActionButton: AnimatedOpacity(
-        duration: const Duration(milliseconds: 1000),
-        opacity: _activeCardIndex != _maxCardIndex - 1 ? 0 : 1,
-        child: Visibility(
-          visible: _activeCardIndex == _maxCardIndex - 1,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: SetupButton(
-                text: 'Continue',
-                onPressed: () => {
-                      // TODO: Set the settings in the config
-                      context.read<DraftConfiguration>().setActivePage(VisiblePage.bans)
-                    }),
-          ),
-        ),
+      floatingActionButton: AnimatedFloatingSubmitButton(
+        text: "Continue",
+        onPressed: () => {context.read<DraftConfiguration>().setActivePage(VisiblePage.bans)},
+        opacityFunction: () => _activeCardIndex == _maxCardIndex - 1 ? 1 : 0,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

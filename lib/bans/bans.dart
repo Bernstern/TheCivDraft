@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:civgen/shared/chip.dart';
+import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,11 +52,25 @@ class _BansTextState extends State<BansText> {
       title: 'bans',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('ban me'),
+          backgroundColor: theme.primaryColorDark,
+          title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text("On The Clock: Player 1"),
+            Text(
+              "Banning Phase",
+              style: largeTextStyle,
+            ),
+            Text("1:42 Remaining")
+          ]),
         ),
         body: Center(
           child: FractionallySizedBox(widthFactor: .6, child: grid),
         ),
+        floatingActionButton: AnimatedFloatingSubmitButton(
+          text: "Confirm Ban",
+          onPressed: () => log("pressed"),
+          opacityFunction: () => 1,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
