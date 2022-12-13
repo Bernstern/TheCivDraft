@@ -34,7 +34,7 @@ class BansText extends StatefulWidget {
 }
 
 class _BansTextState extends State<BansText> {
-  String highlightedCivLeaderName = "";
+  String? highlightedCivLeaderName;
   Map<String, NationChip> civChips = {};
   List<String> bannedCivs = []; // Banned === locked
 
@@ -46,8 +46,8 @@ class _BansTextState extends State<BansText> {
     log("Toggling the ban for $leaderName, no longer highlighting $highlightedCivLeaderName");
     setState(() {
       // First update the previous highlighted chip
-      if (highlightedCivLeaderName != "") {
-        civChips[highlightedCivLeaderName] = generateNationChip(highlightedCivLeaderName, false, false);
+      if (highlightedCivLeaderName != null) {
+        civChips[highlightedCivLeaderName!] = generateNationChip(highlightedCivLeaderName!, false, false);
       }
 
       highlightedCivLeaderName = leaderName;
@@ -58,14 +58,20 @@ class _BansTextState extends State<BansText> {
   }
 
   void onSubmitPressed() {
+    if (highlightedCivLeaderName == null) {
+      throw Exception("No civ is highlighted, submit button shouldn't be visible!");
+    }
+
     // Update the highlighted chip to be locked
-    civChips[highlightedCivLeaderName] = generateNationChip(highlightedCivLeaderName, true, false);
+    setState(() {
+      civChips[highlightedCivLeaderName!] = generateNationChip(highlightedCivLeaderName!, true, false);
+    });
 
     // Add the highlighted civ to the list of banned civs
-    bannedCivs.add(highlightedCivLeaderName);
+    bannedCivs.add(highlightedCivLeaderName!);
 
     // Reset the highlighted civ
-    highlightedCivLeaderName = "";
+    highlightedCivLeaderName = null;
   }
 
   NationChip generateNationChip(String leaderName, [bool chipIsLocked = false, bool chipIsHighlighted = false]) {
@@ -80,7 +86,7 @@ class _BansTextState extends State<BansText> {
   @override
   Widget build(BuildContext context) {
     if (civChips.isEmpty) {
-      log("DAB");
+      log("First time building the bans page, generating all the chips...");
       for (var civ in civList) {
         String leaderName = civ["leaderName"];
         civChips[leaderName] = generateNationChip(leaderName);
@@ -96,6 +102,7 @@ class _BansTextState extends State<BansText> {
       children: civChips.values.toList(),
     );
 
+    // TODO: Make banned chips disappear on transition to draft page
     return MaterialApp(
       title: 'bans',
       home: Scaffold(

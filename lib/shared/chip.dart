@@ -38,12 +38,12 @@ class NationChip extends StatelessWidget {
 
     // If the chip is locked or highlighted, it should be inactive
     if (chipIsHighlighted) {
-      chipColor = Colors.black;
-      textColor = Colors.red;
+      chipColor = theme.shadowColor;
+      // textColor = Colors.red;
       boxShadow = [];
     } else if (chipIsLocked) {
-      chipColor = Colors.black;
-      textColor = Colors.red;
+      chipColor = theme.disabledColor;
+      textColor = Color.fromARGB(255, 92, 92, 92);
       boxShadow = [];
     }
 

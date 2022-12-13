@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:civgen/styles.dart';
 
@@ -36,6 +38,7 @@ class AnimatedFloatingSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("Buildig submit button with opacity ${opacityFunction()}");
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 250),
       opacity: opacityFunction(),

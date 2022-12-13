@@ -8,6 +8,8 @@ ThemeData theme = ThemeData(
   primaryColorLight: const Color(0xFFFFFFFF),
   primaryColor: Colors.white,
   highlightColor: const Color(0xFF800080),
+  shadowColor: const Color(0xFF520052),
+  disabledColor: const Color(0xFF220022),
   hintColor: const Color(0xFF228B22),
   iconTheme: iconTheme,
   fontFamily: 'Roboto',
