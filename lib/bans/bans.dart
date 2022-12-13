@@ -36,6 +36,7 @@ class BansText extends StatefulWidget {
 class _BansTextState extends State<BansText> {
   String highlightedCivLeaderName = "";
   Map<String, NationChip> civChips = {};
+  List<String> bannedCivs = []; // Banned === locked
 
   // Represent if any chip is focused
   bool chipFocused = false;
@@ -54,6 +55,17 @@ class _BansTextState extends State<BansText> {
       // Then update the new highlighted chip
       civChips[leaderName] = generateNationChip(leaderName, false, true);
     });
+  }
+
+  void onSubmitPressed() {
+    // Update the highlighted chip to be locked
+    civChips[highlightedCivLeaderName] = generateNationChip(highlightedCivLeaderName, true, false);
+
+    // Add the highlighted civ to the list of banned civs
+    bannedCivs.add(highlightedCivLeaderName);
+
+    // Reset the highlighted civ
+    highlightedCivLeaderName = "";
   }
 
   NationChip generateNationChip(String leaderName, [bool chipIsLocked = false, bool chipIsHighlighted = false]) {
@@ -94,7 +106,7 @@ class _BansTextState extends State<BansText> {
         ),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Ban",
-          onPressed: () => log("pressed"),
+          onPressed: onSubmitPressed,
           opacityFunction: () => (highlightedCivLeaderName == "" ? 0.0 : 1.0),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

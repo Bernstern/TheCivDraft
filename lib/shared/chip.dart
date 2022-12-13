@@ -37,7 +37,11 @@ class NationChip extends StatelessWidget {
     log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted");
 
     // If the chip is locked or highlighted, it should be inactive
-    if (chipIsLocked || chipIsHighlighted) {
+    if (chipIsHighlighted) {
+      chipColor = Colors.black;
+      textColor = Colors.red;
+      boxShadow = [];
+    } else if (chipIsLocked) {
       chipColor = Colors.black;
       textColor = Colors.red;
       boxShadow = [];
