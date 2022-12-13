@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:civgen/shared/chip.dart';
+import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -77,7 +78,7 @@ class _BansTextState extends State<BansText> {
     ResponsiveGridList grid = ResponsiveGridList(
       rowMainAxisAlignment: MainAxisAlignment.center,
       shrinkWrap: true,
-      minItemWidth: 225,
+      minItemWidth: 150,
       horizontalGridSpacing: 12,
       verticalGridSpacing: 12,
       children: civChips.values.toList(),
@@ -87,30 +88,14 @@ class _BansTextState extends State<BansText> {
       title: 'bans',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: theme.primaryColorDark,
-          leading: Text("On The Clock: Player 1"),
-          title: Text(
-            "Banning Phase",
-            style: largeTextStyle,
-          ),
-          actions: [Text("1:42 Remaining")],
-          // title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          //   Text("On The Clock: Player 1"),
-          //   Text(
-          //     "Banning Phase",
-          //     style: largeTextStyle,
-          //   ),
-          //   Text("1:42 Remaining")
-          // ]),
-        ),
+        appBar: headerBar("shit", "Banning phase", "cum"),
         body: Center(
           child: FractionallySizedBox(widthFactor: .6, child: grid),
         ),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Ban",
           onPressed: () => log("pressed"),
-          opacityFunction: () => 1,
+          opacityFunction: () => (highlightedCivLeaderName == "" ? 0.0 : 1.0),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),

@@ -37,7 +37,7 @@ class AnimatedFloatingSubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 250),
       opacity: opacityFunction(),
       child: Visibility(
         visible: opacityFunction() > 0,

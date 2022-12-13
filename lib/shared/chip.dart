@@ -25,11 +25,7 @@ class NationChip extends StatelessWidget {
 
   // The color of the chip when it is NOT pressed
   Color chipColor = theme.highlightColor;
-
   Color textColor = theme.primaryColor;
-
-  Color borderColor = theme.primaryColor;
-
   List<BoxShadow> boxShadow = [
     const BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
     BoxShadow(
@@ -44,7 +40,6 @@ class NationChip extends StatelessWidget {
     if (chipIsLocked || chipIsHighlighted) {
       chipColor = Colors.black;
       textColor = Colors.red;
-      borderColor = chipColor.withOpacity(0.25);
       boxShadow = [];
     }
 
@@ -55,21 +50,17 @@ class NationChip extends StatelessWidget {
       ),
       child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor),
-              color: chipColor,
-              boxShadow: boxShadow),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(1), color: chipColor, boxShadow: boxShadow),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset('images/$nationIcon', width: 50, height: 50, color: textColor),
-              Text(
-                leaderName,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 18,
+              Image.asset('images/$nationIcon', width: 40, height: 40, color: textColor),
+              Flexible(
+                child: Text(
+                  leaderName,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: textColor, fontSize: 18),
                 ),
               )
             ],
