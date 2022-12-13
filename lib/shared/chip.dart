@@ -10,26 +10,46 @@ class NationChip extends StatelessWidget {
   final String leaderName;
   final String nationIcon;
   final Function onChipPressed;
-  bool chipIsPressed;
 
-  Color activeColor = theme.highlightColor;
-  Color inactiveColor = Colors.black;
-
-  Color activeText = theme.primaryColor;
-  Color inactiveText = Colors.red;
+  bool chipIsHighlighted;
+  bool chipIsLocked;
 
   NationChip({
     super.key,
     required this.leaderName,
     required this.nationIcon,
     required this.onChipPressed,
-    required this.chipIsPressed,
+    required this.chipIsHighlighted,
+    required this.chipIsLocked,
   });
+
+  // The color of the chip when it is NOT pressed
+  Color chipColor = theme.highlightColor;
+
+  Color textColor = theme.primaryColor;
+
+  Color borderColor = theme.primaryColor;
+
+  List<BoxShadow> boxShadow = [
+    const BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
+    BoxShadow(
+        color: theme.highlightColor.withOpacity(.12), offset: const Offset(-4, -4), blurRadius: 15, spreadRadius: 1),
+  ];
 
   @override
   Widget build(BuildContext context) {
+    log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted");
+
+    // If the chip is locked or highlighted, it should be inactive
+    if (chipIsLocked || chipIsHighlighted) {
+      chipColor = Colors.black;
+      textColor = Colors.red;
+      borderColor = chipColor.withOpacity(0.25);
+      boxShadow = [];
+    }
+
     return TextButton(
-      onPressed: () => onChipPressed(),
+      onPressed: () => {!chipIsLocked ? onChipPressed() : log("Chip is locked!)}")},
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
       ),
@@ -37,29 +57,18 @@ class NationChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: chipIsPressed ? activeColor.withOpacity(.25) : activeColor),
-              color: chipIsPressed ? inactiveColor : activeColor,
-              boxShadow: chipIsPressed
-                  ? []
-                  : [
-                      BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
-                      BoxShadow(
-                          color: activeColor.withOpacity(.12), offset: Offset(-4, -4), blurRadius: 15, spreadRadius: 1),
-                    ]),
+              border: Border.all(color: borderColor),
+              color: chipColor,
+              boxShadow: boxShadow),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset(
-                'images/$nationIcon',
-                width: 50,
-                height: 50,
-                color: chipIsPressed ? inactiveText : activeText,
-              ),
+              Image.asset('images/$nationIcon', width: 50, height: 50, color: textColor),
               Text(
                 leaderName,
                 style: TextStyle(
-                  color: chipIsPressed ? inactiveText : activeText,
+                  color: textColor,
                   fontSize: 18,
                 ),
               )

@@ -5,6 +5,7 @@ import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:civgen/globals.dart';
@@ -32,26 +33,33 @@ class BansText extends StatefulWidget {
 }
 
 class _BansTextState extends State<BansText> {
-  Map<String, bool> pressedCivChips = {};
+  String highlightedCivLeaderName = "";
+  Map<String, NationChip> civChips = {};
+
+  // Represent if any chip is focused
+  bool chipFocused = false;
 
   // Keep track of which chips are pressed
   void onChipPressed(String leaderName) {
-    log("Toggling the ban for $leaderName");
+    log("Toggling the ban for $leaderName, no longer highlighting $highlightedCivLeaderName");
     setState(() {
-      pressedCivChips[leaderName] = !(pressedCivChips[leaderName] ?? false);
+      // chipFocused = !currentChipState;
+      highlightedCivLeaderName = leaderName;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<NationChip> civChips = [];
-
-    for (var civ in civList) {
-      civChips.add(NationChip(
-          leaderName: civ["leaderName"],
-          nationIcon: 'Icon_civilization_america.webp',
-          onChipPressed: () => onChipPressed(civ["leaderName"]),
-          chipIsPressed: pressedCivChips[civ["leaderName"]] ?? false));
+    if (civList.isEmpty) {
+      for (var civ in civList) {
+        String leaderName = civ["leaderName"];
+        civChips[leaderName] = (NationChip(
+            leaderName: leaderName,
+            nationIcon: 'Icon_civilization_america.webp',
+            onChipPressed: () => onChipPressed(leaderName),
+            chipIsHighlighted: leaderName == highlightedCivLeaderName,
+            chipIsLocked: false));
+      }
     }
 
     ResponsiveGridList grid = ResponsiveGridList(
@@ -60,7 +68,7 @@ class _BansTextState extends State<BansText> {
       minItemWidth: 225,
       horizontalGridSpacing: 12,
       verticalGridSpacing: 12,
-      children: civChips,
+      children: civChips.values.toList(),
     );
 
     return MaterialApp(

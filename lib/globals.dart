@@ -1,12 +1,5 @@
 library civgen.globals;
 
-// Default fields
-int numPlayers = 3;
-int numCivs = 3;
-
-int maxPlayers = 12;
-int maxCivs = 6;
-
 List<Map> civList = [
   {"nationName": "America (RR)", "leaderName": "Theodore Roosevelt (RR)", "iconPath": "Icon_civilization_america.webp"},
   {
@@ -42,8 +35,8 @@ List<Map> civList = [
     "leaderName": "Wilfrid Laurier",
   },
   {
-    "nationName": "China (KK)",
-    "leaderName": "Kublai Khan",
+    "nationName": "China",
+    "leaderName": "Kublai Khan (C)",
   },
   {
     "nationName": "China (QSH)",
@@ -74,12 +67,12 @@ List<Map> civList = [
     "leaderName": "Menelik II",
   },
   {
-    "nationName": "France (BQ)",
-    "leaderName": "Catherine de Medici",
+    "nationName": "France",
+    "leaderName": "Catherine de Medici (BQ)",
   },
   {
-    "nationName": "France (M)",
-    "leaderName": "Catherine de Medici",
+    "nationName": "France",
+    "leaderName": "Catherine de Medici (M)",
   },
   {
     "nationName": "Gallic",
@@ -162,12 +155,12 @@ List<Map> civList = [
     "leaderName": "Lady Six Sky",
   },
   {
-    "nationName": "Mongolia (GK)",
-    "leaderName": "Genghis Khan",
+    "nationName": "Mongolia",
+    "leaderName": "Genghis Khan (GK)",
   },
   {
-    "nationName": "Mongolia (KK)",
-    "leaderName": "Kublai Khan",
+    "nationName": "Mongolia",
+    "leaderName": "Kublai Khan (KK)",
   },
   {
     "nationName": "Norway",
