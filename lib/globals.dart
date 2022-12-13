@@ -8,10 +8,10 @@ int maxPlayers = 12;
 int maxCivs = 6;
 
 List<Map> civList = [
-  {"nationName": "America (RR)", "leaderName": "Theodore Roosevelt", "iconPath": "Icon_civilization_america.webp"},
+  {"nationName": "America (RR)", "leaderName": "Theodore Roosevelt (RR)", "iconPath": "Icon_civilization_america.webp"},
   {
     "nationName": "America (BM)",
-    "leaderName": "Theodore Roosevelt",
+    "leaderName": "Theodore Roosevelt (BM)",
   },
   {
     "nationName": "Arabia",

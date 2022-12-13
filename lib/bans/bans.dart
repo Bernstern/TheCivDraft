@@ -32,25 +32,41 @@ class BansText extends StatefulWidget {
 }
 
 class _BansTextState extends State<BansText> {
+  Map<String, bool> pressedCivChips = {};
+
+  // Keep track of which chips are pressed
+  void onChipPressed(String leaderName) {
+    log("Toggling the ban for $leaderName");
+    setState(() {
+      pressedCivChips[leaderName] = !(pressedCivChips[leaderName] ?? false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Container> civChips = [];
+    List<NationChip> civChips = [];
+
     for (var civ in civList) {
-      civChips.add(Container(child: nationChip(civ["leaderName"], 'Icon_civilization_america.webp')));
+      civChips.add(NationChip(
+          leaderName: civ["leaderName"],
+          nationIcon: 'Icon_civilization_america.webp',
+          onChipPressed: () => onChipPressed(civ["leaderName"]),
+          chipIsPressed: pressedCivChips[civ["leaderName"]] ?? false));
     }
 
     ResponsiveGridList grid = ResponsiveGridList(
       rowMainAxisAlignment: MainAxisAlignment.center,
       shrinkWrap: true,
       minItemWidth: 225,
-      horizontalGridSpacing: 8,
-      verticalGridSpacing: 8,
+      horizontalGridSpacing: 12,
+      verticalGridSpacing: 12,
       children: civChips,
     );
 
     return MaterialApp(
       title: 'bans',
       home: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: theme.primaryColorDark,
           title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
