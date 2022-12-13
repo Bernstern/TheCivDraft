@@ -43,22 +43,34 @@ class _BansTextState extends State<BansText> {
   void onChipPressed(String leaderName) {
     log("Toggling the ban for $leaderName, no longer highlighting $highlightedCivLeaderName");
     setState(() {
-      // chipFocused = !currentChipState;
+      // First update the previous highlighted chip
+      if (highlightedCivLeaderName != "") {
+        civChips[highlightedCivLeaderName] = generateNationChip(highlightedCivLeaderName, false, false);
+      }
+
       highlightedCivLeaderName = leaderName;
+
+      // Then update the new highlighted chip
+      civChips[leaderName] = generateNationChip(leaderName, false, true);
     });
+  }
+
+  NationChip generateNationChip(String leaderName, [bool chipIsLocked = false, bool chipIsHighlighted = false]) {
+    return NationChip(
+        leaderName: leaderName,
+        nationIcon: 'Icon_civilization_america.webp',
+        onChipPressed: () => onChipPressed(leaderName),
+        chipIsHighlighted: chipIsHighlighted,
+        chipIsLocked: chipIsLocked);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (civList.isEmpty) {
+    if (civChips.isEmpty) {
+      log("DAB");
       for (var civ in civList) {
         String leaderName = civ["leaderName"];
-        civChips[leaderName] = (NationChip(
-            leaderName: leaderName,
-            nationIcon: 'Icon_civilization_america.webp',
-            onChipPressed: () => onChipPressed(leaderName),
-            chipIsHighlighted: leaderName == highlightedCivLeaderName,
-            chipIsLocked: false));
+        civChips[leaderName] = generateNationChip(leaderName);
       }
     }
 
@@ -77,14 +89,20 @@ class _BansTextState extends State<BansText> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: theme.primaryColorDark,
-          title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("On The Clock: Player 1"),
-            Text(
-              "Banning Phase",
-              style: largeTextStyle,
-            ),
-            Text("1:42 Remaining")
-          ]),
+          leading: Text("On The Clock: Player 1"),
+          title: Text(
+            "Banning Phase",
+            style: largeTextStyle,
+          ),
+          actions: [Text("1:42 Remaining")],
+          // title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          //   Text("On The Clock: Player 1"),
+          //   Text(
+          //     "Banning Phase",
+          //     style: largeTextStyle,
+          //   ),
+          //   Text("1:42 Remaining")
+          // ]),
         ),
         body: Center(
           child: FractionallySizedBox(widthFactor: .6, child: grid),
