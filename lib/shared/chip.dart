@@ -3,6 +3,15 @@ import 'dart:developer';
 import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
 
+// The color of the chip when it is NOT pressed
+Color chipColor = theme.highlightColor;
+Color textColor = theme.primaryColor;
+List<BoxShadow> boxShadow = [
+  const BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
+  BoxShadow(
+      color: theme.highlightColor.withOpacity(.12), offset: const Offset(-4, -4), blurRadius: 15, spreadRadius: 1),
+];
+
 /// Chip that displays a nation icon and a leader name.
 ///
 /// The nationIcon is the name of the image file in the images folder.
@@ -11,10 +20,10 @@ class NationChip extends StatelessWidget {
   final String nationIcon;
   final Function onChipPressed;
 
-  bool chipIsHighlighted;
-  bool chipIsLocked;
+  final bool chipIsHighlighted;
+  final bool chipIsLocked;
 
-  NationChip({
+  const NationChip({
     super.key,
     required this.leaderName,
     required this.nationIcon,
@@ -22,15 +31,6 @@ class NationChip extends StatelessWidget {
     required this.chipIsHighlighted,
     required this.chipIsLocked,
   });
-
-  // The color of the chip when it is NOT pressed
-  Color chipColor = theme.highlightColor;
-  Color textColor = theme.primaryColor;
-  List<BoxShadow> boxShadow = [
-    const BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
-    BoxShadow(
-        color: theme.highlightColor.withOpacity(.12), offset: const Offset(-4, -4), blurRadius: 15, spreadRadius: 1),
-  ];
 
   @override
   Widget build(BuildContext context) {
