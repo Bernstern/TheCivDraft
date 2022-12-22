@@ -146,14 +146,12 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int _activeCardIndex = 0;
   int _maxCardIndex = 0;
-  bool _showIntro = true;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  // TODO: Intro blurb
+  bool _showIntro = false;
 
   void nextCard() {
+    log("Next card");
     if (_activeCardIndex < _maxCardIndex - 1) {
       setState(() {
         _activeCardIndex++;
@@ -162,6 +160,7 @@ class _SetupPageState extends State<SetupPage> {
   }
 
   void previousCard() {
+    log("Previous card");
     if (_activeCardIndex > 0) {
       setState(() {
         _activeCardIndex--;
@@ -173,8 +172,9 @@ class _SetupPageState extends State<SetupPage> {
   Widget build(BuildContext context) {
     // Create a list of all the widgets that will be displayed, the intro blurb
     // and the setup widgets
+    log("Building setup page");
     List<Widget> setupCards = [
-      for (var config in context.read<DraftConfiguration>().getSetupConfig)
+      for (SetupConfig config in context.read<DraftConfiguration>().getSetupConfig)
         NumberPicker(
             update: config.update ?? (value) => log("No update function"),
             text: config.text,

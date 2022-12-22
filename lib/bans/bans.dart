@@ -24,12 +24,16 @@ class _BansPageState extends State<BansPage> {
   List<String> bannedCivs = []; // Banned === locked
   Map<int, String> playerNames = {};
   int activePlayer = 0;
+  int numBansPerPlayer = 0;
 
   // Represent if any chip is focused
   bool chipFocused = false;
 
   // Timer in the header
   TimerWidget? timerWidget;
+
+  // Hack to get to the next page
+  Function? nextPage;
 
   // Init function
   @override
@@ -102,7 +106,20 @@ class _BansPageState extends State<BansPage> {
     // Reset the timer
     resetTimer();
 
-    // Also bump to the next player
+    // Determine if one cycle of bans has occurred
+    if (activePlayer == playerNames.length - 1) {
+      log("One cycle of bans has occurred, reducing bans per player by 1");
+      numBansPerPlayer--;
+      log("Number of bans per player remaining: $numBansPerPlayer");
+    }
+
+    // If there are no more bans to be made, move to the next page
+    if (numBansPerPlayer <= 0) {
+      log("No more bans to be made, moving to the next page");
+      nextPage!(VisiblePage.picks);
+      return;
+    }
+
     setState(() {
       activePlayer = (activePlayer + 1) % playerNames.length;
     });
@@ -121,12 +138,21 @@ class _BansPageState extends State<BansPage> {
       for (int i = 0; i < numPlayers; i++) {
         playerNames[i] = "Player ${i + 1}";
       }
+
+      numBansPerPlayer = context.select<DraftConfiguration, int>((conf) => conf.setupBans.value);
+      log("Each player can ban $numBansPerPlayer civs");
     }
 
     // If the timer widget is null, create it
     if (timerWidget == null) {
       log("First time building the bans page, generating the timer widget...");
       resetTimer();
+    }
+
+    // If the next page function is null, get it from the context
+    if (nextPage == null) {
+      log("First time building the bans page, getting the next page function...");
+      nextPage = context.select<DraftConfiguration, Function>((conf) => conf.setActivePage);
     }
 
     ResponsiveGridList grid = ResponsiveGridList(

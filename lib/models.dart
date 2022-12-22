@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:civgen/text/intro.dart';
 
 // Make an enum of available pages
-enum VisiblePage { setup, bans }
+enum VisiblePage { setup, bans, picks }
 
 // Set default number of players, number of games, number of bans,
 class SetupConfig {
@@ -79,6 +79,7 @@ class DraftConfiguration extends ChangeNotifier {
 
   void setActivePage(VisiblePage newPage) {
     page = newPage;
+    log("Active page: $newPage");
     notifyListeners();
   }
 }
