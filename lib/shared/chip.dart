@@ -4,9 +4,9 @@ import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
 
 // The color of the chip when it is NOT pressed
-Color chipColor = theme.highlightColor;
-Color textColor = theme.primaryColor;
-List<BoxShadow> boxShadow = [
+Color defaultChipColor = theme.highlightColor;
+Color defaultTextColor = theme.primaryColor;
+List<BoxShadow> defaultBoxShadow = [
   const BoxShadow(color: Colors.black38, offset: Offset(4, 4), blurRadius: 15, spreadRadius: 1),
   BoxShadow(
       color: theme.highlightColor.withOpacity(.12), offset: const Offset(-4, -4), blurRadius: 15, spreadRadius: 1),
@@ -20,10 +20,14 @@ class NationChip extends StatelessWidget {
   final String nationIcon;
   final Function onChipPressed;
 
-  final bool chipIsHighlighted;
-  final bool chipIsLocked;
+  bool chipIsHighlighted;
+  bool chipIsLocked;
 
-  const NationChip({
+  Color chipColor = defaultChipColor;
+  Color textColor = defaultTextColor;
+  List<BoxShadow> boxShadow = defaultBoxShadow;
+
+  NationChip({
     super.key,
     required this.leaderName,
     required this.nationIcon,
@@ -39,7 +43,6 @@ class NationChip extends StatelessWidget {
     // If the chip is locked or highlighted, it should be inactive
     if (chipIsHighlighted) {
       chipColor = theme.shadowColor;
-      // textColor = Colors.red;
       boxShadow = [];
     } else if (chipIsLocked) {
       chipColor = theme.disabledColor;
