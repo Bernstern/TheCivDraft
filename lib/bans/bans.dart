@@ -1,36 +1,47 @@
 import 'dart:developer';
 
+import 'package:civgen/models.dart';
 import 'package:civgen/shared/chip.dart';
 import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/submit_button.dart';
+import 'package:civgen/shared/timer.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:civgen/globals.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
-class BansPage extends StatelessWidget {
+class BansPage extends StatefulWidget {
   const BansPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const BansText();
-  }
+  State<BansPage> createState() => _BansPageState();
 }
 
-class BansText extends StatefulWidget {
-  const BansText({super.key});
-
-  @override
-  State<BansText> createState() => _BansTextState();
-}
-
-class _BansTextState extends State<BansText> {
+class _BansPageState extends State<BansPage> {
   String? highlightedCivLeaderName;
   Map<String, NationChip> civChips = {};
   List<String> bannedCivs = []; // Banned === locked
+  Map<int, String> playerNames = {};
+  int activePlayer = 0;
 
   // Represent if any chip is focused
   bool chipFocused = false;
+
+  // Timer in the header
+  TimerWidget? timerWidget;
+
+  // Init function
+  @override
+  void initState() {
+    super.initState();
+
+    log("First time building the bans page, generating all the chips...");
+    for (var civ in civList) {
+      String leaderName = civ["leaderName"];
+      civChips[leaderName] = generateNationChip(leaderName);
+    }
+  }
 
   // Keep track of which chips are pressed
   void onChipPressed(String leaderName) {
@@ -60,9 +71,9 @@ class _BansTextState extends State<BansText> {
 
     // Add the highlighted civ to the list of banned civs
     bannedCivs.add(highlightedCivLeaderName!);
-
-    // Reset the highlighted civ
     highlightedCivLeaderName = null;
+
+    advanceToNextPlayer();
   }
 
   NationChip generateNationChip(String leaderName, [bool chipIsLocked = false, bool chipIsHighlighted = false]) {
@@ -74,14 +85,48 @@ class _BansTextState extends State<BansText> {
         chipIsLocked: chipIsLocked);
   }
 
+  void resetTimer() {
+    // TODO: Fetch the timer from the context and make it configurable
+    timerWidget = TimerWidget(
+        durationSeconds: 10,
+        onTimerExpired: () {
+          log("Timer expired, moving to the next player");
+          advanceToNextPlayer();
+        });
+    log("Timer reset...");
+  }
+
+  void advanceToNextPlayer() {
+    log("Advancing to the next player, current player: $activePlayer");
+
+    // Reset the timer
+    resetTimer();
+
+    // Also bump to the next player
+    setState(() {
+      activePlayer = (activePlayer + 1) % playerNames.length;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (civChips.isEmpty) {
-      log("First time building the bans page, generating all the chips...");
-      for (var civ in civList) {
-        String leaderName = civ["leaderName"];
-        civChips[leaderName] = generateNationChip(leaderName);
+    // If the player names is empty, get the number of players from the DraftConfiguration
+    // TODO: move this setup to initState - you can't have context there though so you have to do some hacking with a future
+    if (playerNames.isEmpty) {
+      log("First time building the bans page, generating the player names...");
+
+      int numPlayers = context.select<DraftConfiguration, int>((conf) => conf.setupPlayers.value);
+      log("Number of players: $numPlayers");
+
+      for (int i = 0; i < numPlayers; i++) {
+        playerNames[i] = "Player ${i + 1}";
       }
+    }
+
+    // If the timer widget is null, create it
+    if (timerWidget == null) {
+      log("First time building the bans page, generating the timer widget...");
+      resetTimer();
     }
 
     ResponsiveGridList grid = ResponsiveGridList(
@@ -98,14 +143,14 @@ class _BansTextState extends State<BansText> {
       title: 'bans',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar("shit", "Banning phase", "cum"),
+        appBar: headerBar(playerNames[activePlayer]!, "Banning phase", timerWidget!),
         body: Center(
           child: FractionallySizedBox(widthFactor: .6, child: grid),
         ),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Ban",
           onPressed: onSubmitPressed,
-          opacityFunction: () => (highlightedCivLeaderName == "" ? 0.0 : 1.0),
+          opacityFunction: () => (highlightedCivLeaderName == null ? 0.0 : 1.0),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),

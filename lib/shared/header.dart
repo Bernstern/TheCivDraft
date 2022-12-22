@@ -1,9 +1,8 @@
+import 'package:civgen/shared/timer.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-AppBar headerBar(String leftText, String centerText, String rightText) {
+AppBar headerBar(String leftText, String centerText, TimerWidget timer) {
   return AppBar(
     backgroundColor: theme.primaryColorDark,
     title: Container(
@@ -14,7 +13,7 @@ AppBar headerBar(String leftText, String centerText, String rightText) {
           const Spacer(),
           Text(centerText),
           const Spacer(),
-          Text(rightText),
+          timer,
         ],
       ),
     ),
