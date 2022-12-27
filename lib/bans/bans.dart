@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:civgen/models.dart';
 import 'package:civgen/shared/chip.dart';
+import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/shared/timer.dart';
@@ -20,7 +21,7 @@ class BansPage extends StatefulWidget {
 
 class _BansPageState extends State<BansPage> {
   String? highlightedCivLeaderName;
-  Map<String, NationChip> civChips = {};
+  Map<String, CivStatus> civStatus = {};
   List<String> bannedCivs = []; // Banned === locked
   Map<int, String> playerNames = {};
   int activePlayer = 0;
@@ -43,8 +44,11 @@ class _BansPageState extends State<BansPage> {
     log("First time building the bans page, generating all the chips...");
     for (var civ in civList) {
       String leaderName = civ["leaderName"];
-      civChips[leaderName] = generateNationChip(leaderName);
+      civStatus[leaderName] = CivStatus.available;
     }
+
+    log("Resetting the timer...");
+    resetTimer();
   }
 
   // Keep track of which chips are pressed
@@ -53,13 +57,13 @@ class _BansPageState extends State<BansPage> {
     setState(() {
       // First update the previous highlighted chip
       if (highlightedCivLeaderName != null) {
-        civChips[highlightedCivLeaderName!] = generateNationChip(highlightedCivLeaderName!, false, false);
+        civStatus[highlightedCivLeaderName!] = CivStatus.available;
       }
 
       highlightedCivLeaderName = leaderName;
 
       // Then update the new highlighted chip
-      civChips[leaderName] = generateNationChip(leaderName, false, true);
+      civStatus[leaderName] = CivStatus.selected;
     });
   }
 
@@ -70,7 +74,7 @@ class _BansPageState extends State<BansPage> {
 
     // Update the highlighted chip to be locked
     setState(() {
-      civChips[highlightedCivLeaderName!] = generateNationChip(highlightedCivLeaderName!, true, false);
+      civStatus[highlightedCivLeaderName!] = CivStatus.banned;
     });
 
     // Add the highlighted civ to the list of banned civs
@@ -78,15 +82,6 @@ class _BansPageState extends State<BansPage> {
     highlightedCivLeaderName = null;
 
     advanceToNextPlayer();
-  }
-
-  NationChip generateNationChip(String leaderName, [bool chipIsLocked = false, bool chipIsHighlighted = false]) {
-    return NationChip(
-        leaderName: leaderName,
-        nationIcon: 'Icon_civilization_america.webp',
-        onChipPressed: () => onChipPressed(leaderName),
-        chipIsHighlighted: chipIsHighlighted,
-        chipIsLocked: chipIsLocked);
   }
 
   void resetTimer() {
@@ -143,26 +138,11 @@ class _BansPageState extends State<BansPage> {
       log("Each player can ban $numBansPerPlayer civs");
     }
 
-    // If the timer widget is null, create it
-    if (timerWidget == null) {
-      log("First time building the bans page, generating the timer widget...");
-      resetTimer();
-    }
-
     // If the next page function is null, get it from the context
     if (nextPage == null) {
       log("First time building the bans page, getting the next page function...");
       nextPage = context.select<DraftConfiguration, Function>((conf) => conf.setActivePage);
     }
-
-    ResponsiveGridList grid = ResponsiveGridList(
-      rowMainAxisAlignment: MainAxisAlignment.center,
-      shrinkWrap: true,
-      minItemWidth: 150,
-      horizontalGridSpacing: 12,
-      verticalGridSpacing: 12,
-      children: civChips.values.toList(),
-    );
 
     // TODO: Make banned chips disappear on transition to draft page
     return MaterialApp(
@@ -171,7 +151,12 @@ class _BansPageState extends State<BansPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: headerBar(playerNames[activePlayer]!, "Banning phase", timerWidget!),
         body: Center(
-          child: FractionallySizedBox(widthFactor: .6, child: grid),
+          child: FractionallySizedBox(
+              widthFactor: .6,
+              child: CivGrid(
+                civStatuses: civStatus,
+                onChipPressed: onChipPressed,
+              )),
         ),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Ban",
