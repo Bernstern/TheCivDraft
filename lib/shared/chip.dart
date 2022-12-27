@@ -24,11 +24,7 @@ class NationChip extends StatelessWidget {
   final bool chipIsBanned;
   final bool chipIsPicked;
 
-  Color chipColor = defaultChipColor;
-  Color textColor = defaultTextColor;
-  List<BoxShadow> boxShadow = defaultBoxShadow;
-
-  NationChip({
+  const NationChip({
     super.key,
     required this.leaderName,
     required this.nationIcon,
@@ -41,6 +37,9 @@ class NationChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted)");
+    Color chipColor = defaultChipColor;
+    Color textColor = defaultTextColor;
+    List<BoxShadow> boxShadow = defaultBoxShadow;
 
     // If the chip is locked or highlighted, it should be inactive
     if (chipIsHighlighted) {

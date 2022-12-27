@@ -42,7 +42,7 @@ class _PicksPageState extends State<PicksPage> {
     // TODO: Fetch the timer from the context and make it configurable
     setState(() {
       timerWidget = TimerWidget(
-          durationSeconds: 10,
+          durationSeconds: 150,
           onTimerExpired: () {
             log("Timer expired, picking a random civ for $activePlayer");
 

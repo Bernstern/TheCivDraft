@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:civgen/models.dart';
-import 'package:civgen/shared/chip.dart';
 import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/submit_button.dart';
@@ -10,7 +9,6 @@ import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:civgen/globals.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 class BansPage extends StatefulWidget {
   const BansPage({super.key});
@@ -83,7 +81,7 @@ class _BansPageState extends State<BansPage> {
   void resetTimer() {
     // TODO: Fetch the timer from the context and make it configurable
     timerWidget = TimerWidget(
-        durationSeconds: 10,
+        durationSeconds: 120,
         onTimerExpired: () {
           log("Timer expired, moving to the next player");
           advanceToNextPlayer();
