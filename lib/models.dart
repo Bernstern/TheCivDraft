@@ -53,7 +53,7 @@ class DraftConfiguration extends ChangeNotifier {
   SetupConfig setupGames = initialSetupGames;
   SetupConfig setupBans = initialSetupBans;
 
-  // St the default page to be the setup page
+  // Set the default page to be the setup page
   VisiblePage page = VisiblePage.setup;
 
   List<SetupConfig> get getSetupConfig => [
@@ -61,6 +61,9 @@ class DraftConfiguration extends ChangeNotifier {
         setupGames,
         setupBans,
       ];
+
+  // Keep track of the banned civs
+  List<String> bannedCivs = ["Shaka, Philip II", "Kristina", "Gilgamesh", "Bà Triệu", "Robert the Bruce"];
 
   void setNumPlayers(int num) {
     setupPlayers.value = num;
@@ -75,6 +78,11 @@ class DraftConfiguration extends ChangeNotifier {
   void setNumBans(int num) {
     setupBans.value = num;
     log("Num bans: $num");
+  }
+
+  void setBans(List<String> civs) {
+    bannedCivs = civs;
+    log("Banned civs: $civs");
   }
 
   void setActivePage(VisiblePage newPage) {

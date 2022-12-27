@@ -22,7 +22,6 @@ class BansPage extends StatefulWidget {
 class _BansPageState extends State<BansPage> {
   String? highlightedCivLeaderName;
   Map<String, CivStatus> civStatus = {};
-  List<String> bannedCivs = []; // Banned === locked
   Map<int, String> playerNames = {};
   int activePlayer = 0;
   int numBansPerPlayer = 0;
@@ -77,10 +76,7 @@ class _BansPageState extends State<BansPage> {
       civStatus[highlightedCivLeaderName!] = CivStatus.banned;
     });
 
-    // Add the highlighted civ to the list of banned civs
-    bannedCivs.add(highlightedCivLeaderName!);
     highlightedCivLeaderName = null;
-
     advanceToNextPlayer();
   }
 
@@ -111,6 +107,13 @@ class _BansPageState extends State<BansPage> {
     // If there are no more bans to be made, move to the next page
     if (numBansPerPlayer <= 0) {
       log("No more bans to be made, moving to the next page");
+
+      // Also store the bans
+      log("Storing the bans in the draft configuration...");
+      List<String> bannedCivs =
+          civStatus.entries.where((entry) => entry.value == CivStatus.banned).map((entry) => entry.key).toList();
+      context.read<DraftConfiguration>().setBans(bannedCivs);
+
       nextPage!(VisiblePage.picks);
       return;
     }
@@ -144,9 +147,8 @@ class _BansPageState extends State<BansPage> {
       nextPage = context.select<DraftConfiguration, Function>((conf) => conf.setActivePage);
     }
 
-    // TODO: Make banned chips disappear on transition to draft page
     return MaterialApp(
-      title: 'bans',
+      title: 'Banning',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: headerBar(playerNames[activePlayer]!, "Banning phase", timerWidget!),

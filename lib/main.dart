@@ -38,7 +38,7 @@ class DraftApp extends StatelessWidget {
                       //   return const BansPage();
                       // case VisiblePage.picks:
                       default:
-                        return const BansPage();
+                        return const PicksPage();
                     }
                   },
                 ),

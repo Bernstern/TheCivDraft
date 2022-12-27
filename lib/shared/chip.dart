@@ -20,8 +20,9 @@ class NationChip extends StatelessWidget {
   final String nationIcon;
   final Function onChipPressed;
 
-  bool chipIsHighlighted;
-  bool chipIsLocked;
+  final bool chipIsHighlighted;
+  final bool chipIsBanned;
+  final bool chipIsPicked;
 
   Color chipColor = defaultChipColor;
   Color textColor = defaultTextColor;
@@ -33,25 +34,29 @@ class NationChip extends StatelessWidget {
     required this.nationIcon,
     required this.onChipPressed,
     required this.chipIsHighlighted,
-    required this.chipIsLocked,
+    required this.chipIsBanned,
+    this.chipIsPicked = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted)");
+    // log("Rendering chip for $leaderName (highlighted: $chipIsHighlighted)");
 
     // If the chip is locked or highlighted, it should be inactive
     if (chipIsHighlighted) {
       chipColor = theme.shadowColor;
       boxShadow = [];
-    } else if (chipIsLocked) {
+    } else if (chipIsBanned) {
       chipColor = theme.disabledColor;
       textColor = const Color.fromARGB(255, 92, 92, 92);
+      boxShadow = [];
+    } else if (chipIsPicked) {
+      chipColor = theme.hintColor;
       boxShadow = [];
     }
 
     return TextButton(
-      onPressed: () => {!chipIsLocked ? onChipPressed() : log("Chip is locked!)}")},
+      onPressed: () => {!chipIsBanned ? onChipPressed() : log("Chip is locked!)}")},
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
       ),

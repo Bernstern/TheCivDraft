@@ -26,7 +26,8 @@ class CivGrid extends StatelessWidget {
         nationIcon: leaderNameToImage(leaderName),
         onChipPressed: () => onChipPressed(leaderName),
         chipIsHighlighted: status == CivStatus.selected,
-        chipIsLocked: status == CivStatus.banned,
+        chipIsBanned: status == CivStatus.banned,
+        chipIsPicked: status == CivStatus.picked,
       ));
     });
     log("Generated ${chips.length} chips...");
