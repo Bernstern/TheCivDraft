@@ -24,7 +24,8 @@ class _PicksPageState extends State<PicksPage> {
   Map<String, CivStatus> civStatus = {};
   Map<int, String> playerNames = {};
   int activePlayer = 0;
-  int numPicksPerPlayer = 0;
+  int numGames = 0;
+  int activeGame = 0;
   // Timer in the header
   TimerWidget? timerWidget;
 
@@ -62,6 +63,7 @@ class _PicksPageState extends State<PicksPage> {
     });
   }
 
+  // TODO: This is basically the same as the bans page, refactor
   void onSubmitPressed() {
     if (highlightedCivLeaderName == null) {
       throw Exception("No civ selected, can't submit");
@@ -76,7 +78,24 @@ class _PicksPageState extends State<PicksPage> {
     // TODO: Advance and store the pick and show it
 
     highlightedCivLeaderName = null;
-    // advanceToNextPlayer();
+    advanceToNextPlayer();
+  }
+
+  void advanceToNextPlayer() {
+    log("Advancing to the next player...");
+
+    // Reset the timer for the next player
+    resetTimer();
+
+    // Update the active player to the next one
+    setState(() {
+      if (activePlayer == playerNames.length - 1) {
+        log("Advancing to the next game...");
+        activeGame++;
+      }
+
+      activePlayer = (activePlayer + 1) % playerNames.length;
+    });
   }
 
   @override
@@ -91,8 +110,8 @@ class _PicksPageState extends State<PicksPage> {
         playerNames[i] = "Player ${i + 1}";
       }
 
-      numPicksPerPlayer = context.select<DraftConfiguration, int>((conf) => conf.setupGames.value);
-      log("Each player can ban $numPicksPerPlayer civs");
+      numGames = context.select<DraftConfiguration, int>((conf) => conf.setupGames.value);
+      log("Each player can ban $numGames civs");
     }
 
     if (civStatus.isEmpty) {
@@ -113,7 +132,7 @@ class _PicksPageState extends State<PicksPage> {
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar(playerNames[activePlayer]!, "Picks Phase", timerWidget!),
+        appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget!),
         body: Center(
           child: FractionallySizedBox(
             widthFactor: .6,
