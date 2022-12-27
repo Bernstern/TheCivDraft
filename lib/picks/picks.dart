@@ -6,6 +6,7 @@ import 'package:civgen/globals.dart';
 import 'package:civgen/models.dart';
 import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
+import 'package:civgen/shared/popup.dart';
 import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/shared/timer.dart';
 import 'package:civgen/styles.dart';
@@ -33,18 +34,34 @@ class _PicksPageState extends State<PicksPage> {
   void initState() {
     super.initState();
 
-    log("Resetting the timer...");
-    resetTimer();
+    showPopup();
   }
 
   // TODO: If you run out of time you get a random civ
   void resetTimer() {
     // TODO: Fetch the timer from the context and make it configurable
-    timerWidget = TimerWidget(
-        durationSeconds: 10,
-        onTimerExpired: () {
-          log("Timer expired, moving to the next player");
-        });
+    setState(() {
+      timerWidget = TimerWidget(
+          durationSeconds: 10,
+          onTimerExpired: () {
+            log("Timer expired, picking a random civ for $activePlayer");
+
+            // Highlight a random available civ and "press the submit button"
+            List<MapEntry<String, CivStatus>> availableCivs =
+                civStatus.entries.where((element) => element.value == CivStatus.available).toList();
+
+            // Throw an exception if there are no available civs
+            if (availableCivs.isEmpty) {
+              throw Exception("No available civs to pick!");
+            }
+
+            availableCivs.shuffle();
+            MapEntry<String, CivStatus> randomCiv = availableCivs.first;
+            highlightedCivLeaderName = randomCiv.key;
+            onSubmitPressed();
+            log("Random civ is $highlightedCivLeaderName");
+          });
+    });
     log("Timer reset...");
   }
 
@@ -98,6 +115,21 @@ class _PicksPageState extends State<PicksPage> {
     });
   }
 
+  void showPopup() async {
+    log("Showing the picks popup...");
+    await Future.delayed(Duration.zero);
+    showDialog(
+      context: context,
+      builder: (context) => PopUp(
+        title: "The Draft",
+        content:
+            "This draft is for $numGames games and each player will get two and a half minutes to pick each civ.\nThe draft style is a reverse snake with the lowest seeded player going first.\n\nNote that if you run out of time you will be given a random civ!",
+        actionMessage: "Start the draft!",
+        action: resetTimer,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (playerNames.isEmpty) {
@@ -132,7 +164,7 @@ class _PicksPageState extends State<PicksPage> {
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget!),
+        appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget),
         body: Center(
           child: FractionallySizedBox(
             widthFactor: .6,

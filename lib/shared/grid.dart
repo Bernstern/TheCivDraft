@@ -20,6 +20,7 @@ class CivGrid extends StatelessWidget {
   List<NationChip> generateNationChips(Map<String, CivStatus> civStatuses, Function onChipPressed) {
     List<NationChip> chips = [];
 
+    // TODO: This is super innefficient, we should be able to just update the civStatuses
     civStatuses.forEach((leaderName, status) {
       chips.add(NationChip(
         leaderName: leaderName,

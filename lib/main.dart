@@ -13,6 +13,8 @@ void main() {
   runApp(const DraftApp());
 }
 
+// TODO: make it a reverse snake draft
+
 class DraftApp extends StatelessWidget {
   const DraftApp({Key? key}) : super(key: key);
 
