@@ -21,7 +21,7 @@ class CivGrid extends StatelessWidget {
     civStatuses.forEach((leaderName, status) {
       chips.add(NationChip(
         leaderName: leaderName,
-        nationIcon: leaderNameToImage(leaderName),
+        nationIcon: leaderName,
         onChipPressed: () => onChipPressed(leaderName),
         chipIsHighlighted: status == CivStatus.selected,
         chipIsBanned: status == CivStatus.banned,

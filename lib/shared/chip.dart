@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:civgen/shared/helpers.dart';
 import 'package:civgen/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -66,7 +67,7 @@ class NationChip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset(nationIcon, width: 40, height: 40, color: textColor),
+              fetchIconForLeader(leaderName),
               Flexible(
                 child: Text(
                   leaderName,

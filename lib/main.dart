@@ -13,6 +13,8 @@ void main() {
 
 // TODO: make it a reverse snake draft
 // TODO: Fix the icons
+// TODO: Only allow n games in the picks phase then show only the results
+// TODO: animate showing the results and hiding the picks table
 
 class DraftApp extends StatelessWidget {
   const DraftApp({Key? key}) : super(key: key);

@@ -53,12 +53,9 @@ class ResultsTable extends StatelessWidget {
       for (int player = 0; player < numPlayers; player++) {
         String pick = results[game]![player] ?? "";
 
-        // Get the image for the pick
-        String icon = leaderNameToImage(pick);
-
         gameRow.add(
           Center(
-            child: Image.asset(icon, width: 40, height: 40),
+            child: fetchIconForLeader(pick),
           ),
         );
       }

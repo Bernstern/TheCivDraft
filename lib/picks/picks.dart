@@ -83,21 +83,19 @@ class _PicksPageState extends State<PicksPage> {
 
   // TODO: This is basically the same as the bans page, refactor
   void onSubmitPressed() {
+    // Advance calls set state so we don't need to call it here
     if (highlightedCivLeaderName == null) {
       throw Exception("No civ selected, can't submit");
     }
 
     // Update it to be picked!
     log("Setting $highlightedCivLeaderName to be picked!");
-    setState(() {
-      civStatus[highlightedCivLeaderName!] = CivStatus.picked;
-    });
+    civStatus[highlightedCivLeaderName!] = CivStatus.picked;
 
     // Include this pick in the results - TODO: refactor this
     if (results[activeGame] == null) {
       results[activeGame] = {};
     }
-
     results[activeGame]![activePlayer] = highlightedCivLeaderName!;
 
     highlightedCivLeaderName = null;
@@ -154,10 +152,9 @@ class _PicksPageState extends State<PicksPage> {
 
     if (civStatus.isEmpty) {
       log("First time building the picks page, generating all the chips...");
-      for (var civ in civList) {
-        String leaderName = civ["leaderName"];
-        civStatus[leaderName] = CivStatus.available;
-      }
+      civMap.forEach((key, _) {
+        civStatus[key] = CivStatus.available;
+      });
 
       // Then go through to see if any civs are banned
       List<String> bannedCivs = context.select<DraftConfiguration, List<String>>((conf) => conf.bannedCivs);

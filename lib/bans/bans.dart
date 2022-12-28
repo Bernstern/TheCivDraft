@@ -39,10 +39,9 @@ class _BansPageState extends State<BansPage> {
     super.initState();
 
     log("First time building the bans page, generating all the chips...");
-    for (var civ in civList) {
-      String leaderName = civ["leaderName"];
-      civStatus[leaderName] = CivStatus.available;
-    }
+    civMap.forEach((key, _) {
+      civStatus[key] = CivStatus.available;
+    });
 
     log("Resetting the timer...");
     resetTimer();
