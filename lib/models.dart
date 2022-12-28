@@ -63,7 +63,7 @@ class DraftConfiguration extends ChangeNotifier {
       ];
 
   // Keep track of the banned civs
-  List<String> bannedCivs = ["Shaka, Philip II", "Kristina", "Gilgamesh", "Bà Triệu", "Robert the Bruce"];
+  List<String> bannedCivs = ["Shaka", "Philip II", "Kristina", "Gilgamesh", "Bà Triệu", "Robert the Bruce"];
 
   void setNumPlayers(int num) {
     setupPlayers.value = num;
