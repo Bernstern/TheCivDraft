@@ -26,7 +26,7 @@ class ResultsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int numPlayers = context.select<DraftConfiguration, int>((conf) => conf.setupPlayers.value);
-    log("Building results table with $numPlayers players for ${results.length} games...");
+    // log("Building results table with $numPlayers players for ${results.length} games...");
 
     // Creat a row for the player names
     TableRow playerNames = TableRow(
@@ -53,6 +53,7 @@ class ResultsTable extends StatelessWidget {
       for (int player = 0; player < numPlayers; player++) {
         String pick = results[game]![player] ?? "";
 
+        // TODO: Put a tooltip on the civ icon
         gameRow.add(
           Center(
             child: fetchIconForLeader(pick),

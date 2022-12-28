@@ -35,15 +35,14 @@ class DraftApp extends StatelessWidget {
           routes: {
             "/": (context) => Consumer<DraftConfiguration>(
                   builder: (context, draftConfig, child) {
-                    // switch (draftConfig.page) {
-                    //   case VisiblePage.setup:
-                    //     return const SetupPage();
-                    //   case VisiblePage.bans:
-                    //     return const BansPage();
-                    //   case VisiblePage.picks:
-                    // return const PicksPage();
-                    return const BansPage();
-                    // }
+                    switch (draftConfig.page) {
+                      case VisiblePage.setup:
+                        return const BansPage();
+                      case VisiblePage.bans:
+                        return const BansPage();
+                      case VisiblePage.picks:
+                        return const PicksPage();
+                    }
                   },
                 ),
           },

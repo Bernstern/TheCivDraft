@@ -19,13 +19,13 @@ List<BoxShadow> defaultBoxShadow = [
 class NationChip extends StatelessWidget {
   final String leaderName;
   final String nationIcon;
-  final Function onChipPressed;
+  Function onChipPressed;
 
   final bool chipIsHighlighted;
   final bool chipIsBanned;
   final bool chipIsPicked;
 
-  const NationChip({
+  NationChip({
     super.key,
     required this.leaderName,
     required this.nationIcon,
@@ -50,9 +50,11 @@ class NationChip extends StatelessWidget {
       chipColor = theme.disabledColor;
       textColor = const Color.fromARGB(255, 92, 92, 92);
       boxShadow = [];
+      onChipPressed = () => log("Chip is banned!");
     } else if (chipIsPicked) {
       chipColor = theme.hintColor;
       boxShadow = [];
+      onChipPressed = () => log("Chip is picked!");
     }
 
     return TextButton(

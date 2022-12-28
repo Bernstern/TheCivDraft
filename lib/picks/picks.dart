@@ -8,6 +8,7 @@ import 'package:civgen/picks/results.dart';
 import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/popup.dart';
+import 'package:civgen/shared/snake.dart';
 import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/shared/timer.dart';
 import 'package:civgen/styles.dart';
@@ -26,16 +27,17 @@ class _PicksPageState extends State<PicksPage> {
   Map<String, CivStatus> civStatus = {};
   Map<int, Map<int, String>> results = {};
   Map<int, String> playerNames = {};
-  int activePlayer = 0;
-  int numGames = 0;
-  int activeGame = 0;
+
+  late SnakeDraft snakeDraft;
+
+  late int numGames;
   TimerWidget? timerWidget;
 
   @override
   void initState() {
     super.initState();
 
-    // showPopup();
+    // showPopup(); TODO: Uncomment this to show the popup
   }
 
   // TODO: If you run out of time you get a random civ
@@ -45,7 +47,7 @@ class _PicksPageState extends State<PicksPage> {
       timerWidget = TimerWidget(
           durationSeconds: 150,
           onTimerExpired: () {
-            log("Timer expired, picking a random civ for $activePlayer");
+            log("Timer expired, picking a random civ for ${snakeDraft.activeGame}");
 
             // Highlight a random available civ and "press the submit button"
             List<MapEntry<String, CivStatus>> availableCivs =
@@ -93,10 +95,10 @@ class _PicksPageState extends State<PicksPage> {
     civStatus[highlightedCivLeaderName!] = CivStatus.picked;
 
     // Include this pick in the results - TODO: refactor this
-    if (results[activeGame] == null) {
-      results[activeGame] = {};
+    if (results[snakeDraft.activeGame] == null) {
+      results[snakeDraft.activeGame] = {};
     }
-    results[activeGame]![activePlayer] = highlightedCivLeaderName!;
+    results[snakeDraft.activeGame]![snakeDraft.activePlayer] = highlightedCivLeaderName!;
 
     highlightedCivLeaderName = null;
     advanceToNextPlayer();
@@ -110,12 +112,7 @@ class _PicksPageState extends State<PicksPage> {
 
     // Update the active player to the next one
     setState(() {
-      if (activePlayer == playerNames.length - 1) {
-        log("Advancing to the next game...");
-        activeGame++;
-      }
-
-      activePlayer = (activePlayer + 1) % playerNames.length;
+      snakeDraft.advance();
     });
   }
 
@@ -148,6 +145,9 @@ class _PicksPageState extends State<PicksPage> {
 
       numGames = context.select<DraftConfiguration, int>((conf) => conf.setupGames.value);
       log("Each player can pick $numGames civs");
+
+      snakeDraft = SnakeDraft(numPlayers, numGames);
+      log("Picks player order: $snakeDraft");
     }
 
     if (civStatus.isEmpty) {
@@ -170,7 +170,8 @@ class _PicksPageState extends State<PicksPage> {
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget),
+        appBar: headerBar(
+            "Game ${snakeDraft.activeGame + 1}:  ${playerNames[snakeDraft.activePlayer]!}", "Picks Phase", timerWidget),
         body: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           SizedBox(
             width: width * 0.6,

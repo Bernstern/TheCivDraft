@@ -18,13 +18,13 @@ class BansPage extends StatefulWidget {
   State<BansPage> createState() => _BansPageState();
 }
 
+// TODO: Setup the same timer setup as the picks page
 class _BansPageState extends State<BansPage> {
+  bool loaded = false;
   String? highlightedCivLeaderName;
   Map<String, CivStatus> civStatus = {};
   Map<int, String> playerNames = {};
-  List<int>? playerOrder;
-
-  int get activePlayer => playerOrder![0];
+  late SnakeDraft snakeDraft;
 
   // Represent if any chip is focused
   bool chipFocused = false;
@@ -33,7 +33,7 @@ class _BansPageState extends State<BansPage> {
   TimerWidget? timerWidget;
 
   // Hack to get to the next page
-  Function? nextPage;
+  late Function nextPage;
 
   // Init function
   @override
@@ -91,14 +91,18 @@ class _BansPageState extends State<BansPage> {
   }
 
   void advanceToNextPlayer() {
-    log("Advancing to the next player, current player: $activePlayer");
+    log("Advancing to the next player, current player: ${snakeDraft.activePlayer}");
 
     // Reset the timer
     resetTimer();
 
+    setState(() {
+      snakeDraft.advance();
+    });
+
     // If there are no more bans to be made, move to the next page
     //  aka - the last player just drafted
-    if (playerOrder!.length == 1) {
+    if (snakeDraft.isDone) {
       log("No more bans to be made, moving to the next page");
 
       // Also store the bans
@@ -107,22 +111,16 @@ class _BansPageState extends State<BansPage> {
           civStatus.entries.where((entry) => entry.value == CivStatus.banned).map((entry) => entry.key).toList();
       context.read<DraftConfiguration>().setBans(bannedCivs);
 
-      nextPage!(VisiblePage.picks);
+      nextPage(VisiblePage.picks);
       return;
     }
-
-    setState(() {
-      // Remove the current player from the front of the list - this will make the next player the first element
-      playerOrder!.removeAt(0);
-    });
-    log("There are ${playerOrder!.length} bans left to be made...");
   }
 
   @override
   Widget build(BuildContext context) {
     // If the player names is empty, get the number of players from the DraftConfiguration
     // TODO: move this setup to initState - you can't have context there though so you have to do some hacking with a future
-    if (playerOrder == null) {
+    if (!loaded) {
       log("First time building the bans page, generating the player names and order...");
 
       int numPlayers = context.select<DraftConfiguration, int>((conf) => conf.setupPlayers.value);
@@ -135,21 +133,20 @@ class _BansPageState extends State<BansPage> {
       int numBansPerPlayer = context.select<DraftConfiguration, int>((conf) => conf.setupBans.value);
       log("Each player can ban $numBansPerPlayer civs");
 
-      playerOrder = createReverseSnakeOrder(numPlayers, numBansPerPlayer);
-      log("Player order: $playerOrder");
-    }
+      snakeDraft = SnakeDraft(numPlayers, numBansPerPlayer);
+      log("Player order: $snakeDraft");
 
-    // If the next page function is null, get it from the context
-    if (nextPage == null) {
       log("First time building the bans page, getting the next page function...");
       nextPage = context.select<DraftConfiguration, Function>((conf) => conf.setActivePage);
+
+      loaded = true;
     }
 
     return MaterialApp(
       title: 'Banning',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar(playerNames[activePlayer]!, "Banning phase", timerWidget!),
+        appBar: headerBar(playerNames[snakeDraft.activePlayer]!, "Banning phase", timerWidget!),
         body: Center(
           child: FractionallySizedBox(
               widthFactor: .6,
