@@ -37,7 +37,7 @@ class _PicksPageState extends State<PicksPage> {
   void initState() {
     super.initState();
 
-    // showPopup(); TODO: Uncomment this to show the popup
+    showPopup();
   }
 
   // TODO: If you run out of time you get a random civ
@@ -166,25 +166,47 @@ class _PicksPageState extends State<PicksPage> {
     var width = MediaQuery.of(context).size.width;
     log("Results: $results");
 
+    // Determine whether or not to show the grid
+    Widget civGrid = Container();
+    if (!snakeDraft.isDone) {
+      civGrid = CivGrid(civStatuses: civStatus, onChipPressed: onChipPressed);
+    }
+
+    // Determine whether or not to show the active player
+    String headerLeftText = "";
+    if (!snakeDraft.isDone) {
+      headerLeftText = "Game ${snakeDraft.activeGame + 1}:  ${playerNames[snakeDraft.activePlayer]!}";
+    }
+
+    // If we are done stop the timer
+    // TODO: This is a bit hacky, refactor
+    if (snakeDraft.isDone) {
+      log("Stopping the timer...");
+      timerWidget = null;
+    }
+
+    // Are we showing just the picks, the picks and the results, or just the results
+    List<Widget> content = [];
+    Widget generatePicksComponent() => SizedBox(width: width * 0.6, child: civGrid);
+    Widget generateResultsComponent() => SizedBox(width: width * 0.3, child: ResultsTable(results: results));
+
+    if (results.isEmpty) {
+      log("No results yet, just showing the picks");
+      content = [generatePicksComponent()];
+    } else if (snakeDraft.isDone) {
+      log("All results are in, just showing the results");
+      content = [generateResultsComponent()];
+    } else {
+      log("Some results are in, showing the picks and the results");
+      content = [generatePicksComponent(), generateResultsComponent()];
+    }
+
     return MaterialApp(
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: headerBar(
-            "Game ${snakeDraft.activeGame + 1}:  ${playerNames[snakeDraft.activePlayer]!}", "Picks Phase", timerWidget),
-        body: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          SizedBox(
-            width: width * 0.6,
-            child: CivGrid(
-              civStatuses: civStatus,
-              onChipPressed: onChipPressed,
-            ),
-          ),
-          SizedBox(
-            width: width * 0.3,
-            child: ResultsTable(results: results),
-          ),
-        ]),
+        appBar: headerBar(headerLeftText, "Picks Phase", timerWidget),
+        body: Center(child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [...content])),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Pick",
           onPressed: onSubmitPressed,

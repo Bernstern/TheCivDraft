@@ -21,14 +21,14 @@ class SetupConfig {
 }
 
 SetupConfig initialSetupPlayers = SetupConfig(
-  value: 3,
+  value: 2,
   min: 2,
   max: 8,
   text: pickPlayers,
 );
 
 SetupConfig initialSetupGames = SetupConfig(
-  value: 4,
+  value: 1,
   min: 1,
   max: 5,
   text: pickGames,
