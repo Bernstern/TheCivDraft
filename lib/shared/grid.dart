@@ -37,13 +37,15 @@ class CivGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveGridList(
-      rowMainAxisAlignment: MainAxisAlignment.center,
-      shrinkWrap: true,
-      minItemWidth: 150,
-      horizontalGridSpacing: 12,
-      verticalGridSpacing: 12,
-      children: generateNationChips(civStatuses, onChipPressed),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ResponsiveGridList(
+        shrinkWrap: true,
+        minItemWidth: 150,
+        horizontalGridSpacing: 12,
+        verticalGridSpacing: 12,
+        children: generateNationChips(civStatuses, onChipPressed),
+      ),
     );
   }
 }

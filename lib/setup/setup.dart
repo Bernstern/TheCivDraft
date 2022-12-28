@@ -1,15 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:civgen/styles.dart';
-import 'package:flutter/services.dart';
 
 import 'dart:developer';
 import 'package:provider/provider.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 
-import 'package:civgen/text/intro.dart';
 import 'package:civgen/models.dart';
 
 import '../shared/submit_button.dart';

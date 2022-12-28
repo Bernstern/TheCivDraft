@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:civgen/globals.dart';
 import 'package:civgen/models.dart';
+import 'package:civgen/picks/results.dart';
 import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
 import 'package:civgen/shared/popup.dart';
@@ -34,7 +35,7 @@ class _PicksPageState extends State<PicksPage> {
   void initState() {
     super.initState();
 
-    showPopup();
+    // showPopup();
   }
 
   // TODO: If you run out of time you get a random civ
@@ -133,7 +134,7 @@ class _PicksPageState extends State<PicksPage> {
   @override
   Widget build(BuildContext context) {
     if (playerNames.isEmpty) {
-      log("First time building the bans page, generating the player names...");
+      log("First time building the picks page, generating the player names...");
 
       int numPlayers = context.select<DraftConfiguration, int>((conf) => conf.setupPlayers.value);
       log("Number of players: $numPlayers");
@@ -143,11 +144,11 @@ class _PicksPageState extends State<PicksPage> {
       }
 
       numGames = context.select<DraftConfiguration, int>((conf) => conf.setupGames.value);
-      log("Each player can ban $numGames civs");
+      log("Each player can pick $numGames civs");
     }
 
     if (civStatus.isEmpty) {
-      log("First time building the bans page, generating all the chips...");
+      log("First time building the picks page, generating all the chips...");
       for (var civ in civList) {
         String leaderName = civ["leaderName"];
         civStatus[leaderName] = CivStatus.available;
@@ -160,20 +161,25 @@ class _PicksPageState extends State<PicksPage> {
       }
     }
 
+    var width = MediaQuery.of(context).size.width;
+
     return MaterialApp(
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget),
-        body: Center(
-          child: FractionallySizedBox(
-            widthFactor: .6,
+        body: Row(children: [
+          SizedBox(
+            width: width * 0.6,
             child: CivGrid(
               civStatuses: civStatus,
               onChipPressed: onChipPressed,
             ),
           ),
-        ),
+          ResultsTable(results: {
+            1: {1: "Poundmaker"}
+          }),
+        ]),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Pick",
           onPressed: onSubmitPressed,
