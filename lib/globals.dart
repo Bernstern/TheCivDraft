@@ -52,7 +52,7 @@ Map<String, String> civMap = {
   'Trajan': 'Rome',
   'Peter': 'Russia',
   'Tomyris': 'Scythia',
-  'Robert the Bruce': 'Scottland',
+  'Robert the Bruce': 'Scotland',
   'Philip II': 'Spain',
   'Kristina': 'Sweden',
   'Gilgamesh': 'Sumeria',

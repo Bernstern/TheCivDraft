@@ -41,7 +41,8 @@ class DraftApp extends StatelessWidget {
                     //   case VisiblePage.bans:
                     //     return const BansPage();
                     //   case VisiblePage.picks:
-                    return const PicksPage();
+                    // return const PicksPage();
+                    return const BansPage();
                     // }
                   },
                 ),

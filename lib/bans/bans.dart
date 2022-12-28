@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:civgen/models.dart';
 import 'package:civgen/shared/grid.dart';
 import 'package:civgen/shared/header.dart';
+import 'package:civgen/shared/snake.dart';
 import 'package:civgen/shared/submit_button.dart';
 import 'package:civgen/shared/timer.dart';
 import 'package:civgen/styles.dart';
@@ -21,8 +22,9 @@ class _BansPageState extends State<BansPage> {
   String? highlightedCivLeaderName;
   Map<String, CivStatus> civStatus = {};
   Map<int, String> playerNames = {};
-  int activePlayer = 0;
-  int numBansPerPlayer = 0;
+  List<int>? playerOrder;
+
+  int get activePlayer => playerOrder![0];
 
   // Represent if any chip is focused
   bool chipFocused = false;
@@ -94,15 +96,9 @@ class _BansPageState extends State<BansPage> {
     // Reset the timer
     resetTimer();
 
-    // Determine if one cycle of bans has occurred
-    if (activePlayer == playerNames.length - 1) {
-      log("One cycle of bans has occurred, reducing bans per player by 1");
-      numBansPerPlayer--;
-      log("Number of bans per player remaining: $numBansPerPlayer");
-    }
-
     // If there are no more bans to be made, move to the next page
-    if (numBansPerPlayer <= 0) {
+    //  aka - the last player just drafted
+    if (playerOrder!.length == 1) {
       log("No more bans to be made, moving to the next page");
 
       // Also store the bans
@@ -116,16 +112,18 @@ class _BansPageState extends State<BansPage> {
     }
 
     setState(() {
-      activePlayer = (activePlayer + 1) % playerNames.length;
+      // Remove the current player from the front of the list - this will make the next player the first element
+      playerOrder!.removeAt(0);
     });
+    log("There are ${playerOrder!.length} bans left to be made...");
   }
 
   @override
   Widget build(BuildContext context) {
     // If the player names is empty, get the number of players from the DraftConfiguration
     // TODO: move this setup to initState - you can't have context there though so you have to do some hacking with a future
-    if (playerNames.isEmpty) {
-      log("First time building the bans page, generating the player names...");
+    if (playerOrder == null) {
+      log("First time building the bans page, generating the player names and order...");
 
       int numPlayers = context.select<DraftConfiguration, int>((conf) => conf.setupPlayers.value);
       log("Number of players: $numPlayers");
@@ -134,8 +132,11 @@ class _BansPageState extends State<BansPage> {
         playerNames[i] = "Player ${i + 1}";
       }
 
-      numBansPerPlayer = context.select<DraftConfiguration, int>((conf) => conf.setupBans.value);
+      int numBansPerPlayer = context.select<DraftConfiguration, int>((conf) => conf.setupBans.value);
       log("Each player can ban $numBansPerPlayer civs");
+
+      playerOrder = createReverseSnakeOrder(numPlayers, numBansPerPlayer);
+      log("Player order: $playerOrder");
     }
 
     // If the next page function is null, get it from the context
