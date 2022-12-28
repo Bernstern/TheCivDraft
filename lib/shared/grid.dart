@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:civgen/shared/chip.dart';
+import 'package:civgen/shared/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
@@ -12,10 +13,6 @@ class CivGrid extends StatelessWidget {
   final Function onChipPressed;
 
   const CivGrid({super.key, required this.civStatuses, required this.onChipPressed});
-
-  String leaderNameToImage(String leaderName) {
-    return "Icon_civilization_America.webp";
-  }
 
   List<NationChip> generateNationChips(Map<String, CivStatus> civStatuses, Function onChipPressed) {
     List<NationChip> chips = [];
@@ -38,12 +35,12 @@ class CivGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: ResponsiveGridList(
         shrinkWrap: true,
-        minItemWidth: 150,
-        horizontalGridSpacing: 12,
-        verticalGridSpacing: 12,
+        minItemWidth: 256,
+        horizontalGridSpacing: 16,
+        verticalGridSpacing: 16,
         children: generateNationChips(civStatuses, onChipPressed),
       ),
     );

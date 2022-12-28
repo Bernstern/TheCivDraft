@@ -24,11 +24,11 @@ class PicksPage extends StatefulWidget {
 class _PicksPageState extends State<PicksPage> {
   String? highlightedCivLeaderName;
   Map<String, CivStatus> civStatus = {};
+  Map<int, Map<int, String>> results = {};
   Map<int, String> playerNames = {};
   int activePlayer = 0;
   int numGames = 0;
   int activeGame = 0;
-  // Timer in the header
   TimerWidget? timerWidget;
 
   @override
@@ -93,7 +93,12 @@ class _PicksPageState extends State<PicksPage> {
       civStatus[highlightedCivLeaderName!] = CivStatus.picked;
     });
 
-    // TODO: Advance and store the pick and show it
+    // Include this pick in the results - TODO: refactor this
+    if (results[activeGame] == null) {
+      results[activeGame] = {};
+    }
+
+    results[activeGame]![activePlayer] = highlightedCivLeaderName!;
 
     highlightedCivLeaderName = null;
     advanceToNextPlayer();
@@ -162,13 +167,14 @@ class _PicksPageState extends State<PicksPage> {
     }
 
     var width = MediaQuery.of(context).size.width;
+    log("Results: $results");
 
     return MaterialApp(
       title: 'Picks',
       home: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: headerBar("Game ${activeGame + 1}:  ${playerNames[activePlayer]!}", "Picks Phase", timerWidget),
-        body: Row(children: [
+        body: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           SizedBox(
             width: width * 0.6,
             child: CivGrid(
@@ -176,9 +182,10 @@ class _PicksPageState extends State<PicksPage> {
               onChipPressed: onChipPressed,
             ),
           ),
-          ResultsTable(results: {
-            1: {1: "Poundmaker"}
-          }),
+          SizedBox(
+            width: width * 0.3,
+            child: ResultsTable(results: results),
+          ),
         ]),
         floatingActionButton: AnimatedFloatingSubmitButton(
           text: "Confirm Pick",

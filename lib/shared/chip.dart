@@ -66,7 +66,7 @@ class NationChip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset('images/$nationIcon', width: 40, height: 40, color: textColor),
+              Image.asset(nationIcon, width: 40, height: 40, color: textColor),
               Flexible(
                 child: Text(
                   leaderName,
