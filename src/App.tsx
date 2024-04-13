@@ -1,20 +1,15 @@
 "use client";
 import { Civ, Civs } from "./utils/civs";
+import { getNextPlayer } from "./utils/logic";
 import { DEFAULT_NUM_GAMES, DEFAULT_NUM_PLAYERS } from "./utils/settings";
 import { useEffect, useState } from "react";
 
-function getNextPlayer(
-  current: number,
-  max: number,
-  turnRound: number
-): number {
-  if (turnRound % 2 === 0) {
-    // Even rounds (0, 2, 4,...) go backwards
-    return current > 1 ? current - 1 : max;
-  } else {
-    // Odd rounds (1, 3, 5,...) go forwards
-    return current < max ? current + 1 : 1;
-  }
+interface BanningState {
+  selected: number | null;
+  bannedCivs: number[];
+  currentPlayer: number;
+  civsRemainingThisRound: number;
+  turnRound: number;
 }
 
 function createCivButton(
@@ -35,7 +30,7 @@ function createCivButton(
   let extra_css = "bg-sky-900";
 
   if (selected === civ.id) {
-    extra_css = "bg-green-500";
+    extra_css = "bg-red-500";
   } else if (isBanned.includes(civ.id)) {
     extra_css = "bg-stone-900 cursor-not-allowed";
   } else {
@@ -65,21 +60,23 @@ function createCivButton(
 }
 
 export default function Home(): JSX.Element {
-  const [selected, setSelected] = useState<number | null>(null);
-  const [bannedCivs, setBannedCivs] = useState<number[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState(DEFAULT_NUM_PLAYERS);
-  const [civsRemainingThisRound, setCivsRemainingThisRound] =
-    useState<number>(DEFAULT_NUM_GAMES);
-  const [turnRound, setTurnRound] = useState(0);
+  const [gameState, setGameState] = useState<BanningState>({
+    selected: null,
+    bannedCivs: [],
+    currentPlayer: DEFAULT_NUM_PLAYERS,
+    civsRemainingThisRound: DEFAULT_NUM_GAMES,
+    turnRound: 0,
+  });
+
+  const {
+    selected,
+    bannedCivs,
+    currentPlayer,
+    civsRemainingThisRound,
+    turnRound,
+  } = gameState;
   const totalTurns = DEFAULT_NUM_PLAYERS * DEFAULT_NUM_GAMES;
   const bansLeft = totalTurns - bannedCivs.length;
-
-  console.log("bannedCivs", bannedCivs);
-  console.log("currentPlayer", currentPlayer);
-  console.log("civsRemainingThisRound", civsRemainingThisRound);
-  console.log("turnRound", turnRound);
-  console.log("totalTurns", totalTurns);
-  console.log("bansLeft", bansLeft);
 
   const handleConfirm = () => {
     if (selected === null) {
@@ -87,7 +84,6 @@ export default function Home(): JSX.Element {
       return;
     }
 
-    // Calculate all updates first
     const newBannedCivs = [...bannedCivs, selected];
     const newCivsRemainingThisRound = civsRemainingThisRound - 1;
     const newTurnRound =
@@ -95,28 +91,32 @@ export default function Home(): JSX.Element {
     const newCurrentPlayer = getNextPlayer(
       currentPlayer,
       DEFAULT_NUM_PLAYERS,
-      newTurnRound
+      newTurnRound,
+      newCivsRemainingThisRound
     );
 
-    // Now, batch the updates
-    setBannedCivs(newBannedCivs);
-    setSelected(null); // Reset the selected civ
-    setCivsRemainingThisRound(
-      newCivsRemainingThisRound <= 0
-        ? DEFAULT_NUM_GAMES
-        : newCivsRemainingThisRound
-    );
-    setTurnRound(newTurnRound);
-    setCurrentPlayer(newCurrentPlayer);
+    setGameState({
+      ...gameState,
+      selected: null, // Reset the selected civ
+      bannedCivs: newBannedCivs,
+      civsRemainingThisRound: newCivsRemainingThisRound,
+      turnRound: newTurnRound,
+      currentPlayer: newCurrentPlayer,
+    });
   };
 
   const civButtons = Civs.map((civ) =>
-    createCivButton(civ, selected, setSelected, bannedCivs)
+    createCivButton(
+      civ,
+      selected,
+      (id: number | null) => setGameState({ ...gameState, selected: id }),
+      bannedCivs
+    )
   );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="flex w-full justify-between items-center">
+    <main className="main">
+      <div className="header">
         <div>
           <h1 className="text-5xl font-bold">The Civ Draft</h1>
           <em className="text-lg">Banning Phase</em>
@@ -127,23 +127,10 @@ export default function Home(): JSX.Element {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(11, 1fr)",
-          gap: "6px",
-          overflowY: "auto",
-          minHeight: "80vh",
-        }}
-      >
-        {civButtons}
-      </div>
+      <div className="grid-container">{civButtons}</div>
 
       {selected !== null && (
-        <button
-          className="mt-4 p-2 bg-green-600 text-white rounded shadow-lg hover:bg-green-700 transition-colors"
-          onClick={handleConfirm}
-        >
+        <button className="confirm-button" onClick={handleConfirm}>
           Confirm Selection
         </button>
       )}

@@ -16,6 +16,46 @@
   }
 }
 
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* Adjust this if necessary */
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 6px;
+  overflow-y: auto;
+  width: 100%;
+  min-height: calc(80vh - 10vh); /* Adjusting the height to leave space at the bottom */
+  margin-bottom: 15vh; /* Leaves space at the bottom equivalent to the button's height */
+}
+
+.confirm-button {
+  position: fixed;
+  bottom: 5vh; /* Adjust based on actual button height */
+  left: 50%;
+  transform: translateX(-50%); /* Centers the button */
+  padding: 12px 24px;
+  background-color: #4CAF50; /* Example color */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000; /* Ensures it floats above other content */
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
