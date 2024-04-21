@@ -2,9 +2,11 @@
 import { BanningState, BanningView } from "./components/banView";
 import { DraftingState, DraftingView } from "./components/draftView";
 import { useEffect, useState } from "react";
-import { DEFAULT_NUM_GAMES, DEFAULT_NUM_PLAYERS } from "./utils/settings";
-
-type views = "banning" | "drafting";
+import {
+  DEFAULT_NUM_GAMES,
+  DEFAULT_NUM_PLAYERS,
+  VIEWS,
+} from "./utils/settings";
 
 interface GlobalState {
   numPlayers: number;
@@ -13,7 +15,7 @@ interface GlobalState {
 }
 
 export default function Home(): JSX.Element {
-  const [activeView, setActiveView] = useState<views>("banning");
+  const [activeView, setActiveView] = useState<VIEWS>("drafting");
 
   // TODO: Be able to configure the number of players and games
   const [globalState, setGlobalState] = useState<GlobalState>({
@@ -34,8 +36,9 @@ export default function Home(): JSX.Element {
 
   const [draftState, setDraftState] = useState<DraftingState>({
     selected: null,
-    bannedCivs: [],
-    currentPlayer: globalState.numGames,
+    bannedCivs: [1, 3, 5, 12, 15, 29, 51, 22, 13],
+    selectedCivs: new Map(),
+    currentPlayer: 1,
     civsRemainingThisRound: globalState.numPlayers,
     turnRound: 0,
     totalGames: globalState.numGames,
