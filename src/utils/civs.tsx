@@ -316,10 +316,12 @@ export const Civs: Civ[] = [
     nationName: "China",
     leaderName: "Yongle",
   },
-].map((civ, index) => ({
-  ...civ,
-  id: index, // This will assign an ID starting from 0 to each civ
-}));
+]
+  .sort((a, b) => a.leaderName.localeCompare(b.leaderName))
+  .map((civ, index) => ({
+    ...civ,
+    id: index, // This will assign an ID starting from 0 to each civ
+  }));
 
 // Add a civ at -1 to represent the "None" option
 export const EMPTY_CIV: Civ = {

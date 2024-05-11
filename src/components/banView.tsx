@@ -3,6 +3,9 @@ import { getNextPlayer } from "../utils/logic";
 import { createCivButton } from "./civButton";
 import { Civs } from "../utils/civs";
 import { VIEWS } from "../utils/settings";
+import RGL, { Layout, WidthProvider } from "react-grid-layout";
+
+const GridLayout = WidthProvider(RGL);
 
 export interface BanningState {
   selected: number | null;
@@ -74,16 +77,32 @@ export function BanningView(
     }
   };
 
-  const civButtons = Civs.map((civ) =>
-    createCivButton(
-      civ,
-      selected,
-      (id: number | null) => setBanningState({ ...banningState, selected: id }),
-      bannedCivs,
-      [],
-      "banning"
-    )
-  );
+  console.log(Civs);
+
+  const NUM_COLS = 12;
+
+  const civButtons = Civs.map((civ, i) => (
+    <div
+      key={civ.id}
+      data-grid={{
+        x: i % NUM_COLS,
+        y: Math.floor(i / NUM_COLS),
+        w: 1,
+        h: 1,
+        static: true,
+      }}
+    >
+      {createCivButton(
+        civ,
+        selected,
+        (id: number | null) =>
+          setBanningState({ ...banningState, selected: id }),
+        bannedCivs,
+        [],
+        "banning"
+      )}
+    </div>
+  ));
 
   return (
     <main className="main">
@@ -98,7 +117,9 @@ export function BanningView(
         </div>
       </div>
 
-      <div className="grid-container">{civButtons}</div>
+      <GridLayout className="layout" isBounded={true}>
+        {civButtons}
+      </GridLayout>
 
       {selected !== null && (
         <button className="confirm-button" onClick={handleConfirm}>

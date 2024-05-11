@@ -32,25 +32,6 @@ main {
   align-items: center;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  gap: 6px;
-  overflow-y: auto;
-  width: 100%;
-  min-height: calc(80vh - 10vh); /* Adjusting the height to leave space at the bottom */
-  margin-bottom: 15vh; /* Leaves space at the bottom equivalent to the button's height */
-}
-
-.selection-container {
-  display: grid;
-  gap: 6px;
-  overflow-y: auto;
-  width: 100%;
-  min-height: calc(50vh - 10vh); /* Adjusting the height to leave space at the bottom */
-  margin-bottom: 15vh; /* Leaves space at the bottom equivalent to the button's height */
-}
-
 .confirm-button {
   position: fixed;
   bottom: 5vh; /* Adjust based on actual button height */
@@ -63,6 +44,13 @@ main {
   border-radius: 8px;
   cursor: pointer;
   z-index: 1000; /* Ensures it floats above other content */
+}
+
+/* Class for a react-grid-container that can fill the whole remainder of the page */
+.layout {
+  display: flex;
+  height: 80%;
+  width: 100%;
 }
 
 

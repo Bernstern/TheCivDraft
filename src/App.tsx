@@ -1,6 +1,6 @@
 "use client";
-import { BanningState, BanningView } from "./components/banView";
-import { DraftingState, DraftingView } from "./components/draftView";
+import { BanningState } from "./components/banView";
+import { DraftingState, DraftView } from "./components/draftView";
 import { SelectionState, SelectionView } from "./components/selectionView";
 import { useEffect, useState } from "react";
 import {
@@ -8,6 +8,7 @@ import {
   DEFAULT_NUM_PLAYERS,
   VIEWS,
 } from "./utils/settings";
+import { BanningView } from "./components/banView";
 
 interface GlobalState {
   numPlayers: number;
@@ -15,7 +16,7 @@ interface GlobalState {
 }
 
 export default function Home(): JSX.Element {
-  const [activeView, setActiveView] = useState<VIEWS>("selecting");
+  const [activeView, setActiveView] = useState<VIEWS>("banning");
 
   // TODO: Be able to configure the number of players and games
   const [globalState, setGlobalState] = useState<GlobalState>({
@@ -91,11 +92,12 @@ export default function Home(): JSX.Element {
 
   // If we are in the banning view, show the banning view
   if (activeView === "banning") {
+    // return BanningView(banState, setBanState, setActiveViewWrapper);
     return BanningView(banState, setBanState, setActiveViewWrapper);
-  } else if (activeView === "drafting") {
-    return DraftingView(draftState, setDraftState);
+    // } else if (activeView === "drafting") {
+    // return new DraftView({ draftState, setDraftState }).render();
   } else if (activeView === "selecting") {
-    return SelectionView(selectionState, setSelectionState);
+    return new SelectionView({}, selectionState, setSelectionState).render();
   } else {
     throw new Error(`Invalid view: ${activeView}`);
   }

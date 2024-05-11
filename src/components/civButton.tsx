@@ -43,8 +43,13 @@ export function createCivButton(
   return (
     <button
       key={`${activeView}=${civ.id}`}
-      className={`relative flex flex-col items-center justify-center p-1 m-2 border-2 ${extra_css} text-white rounded`}
-      style={{ flex: 1, flexDirection: "column", minHeight: "100px" }}
+      className={`relative flex flex-col items-center justify-center border-2 ${extra_css} text-white rounded`}
+      style={{
+        flex: 1,
+        flexDirection: "column",
+        minHeight: "100px",
+        width: "90%",
+      }}
       onClick={() =>
         !isBanned.includes(civ.id) &&
         setSelected(selected === civ.id ? null : civ.id)
