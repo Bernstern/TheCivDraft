@@ -1,6 +1,7 @@
 "use client";
 import { BanningState, BanningView } from "./components/banView";
 import { DraftingState, DraftingView } from "./components/draftView";
+import { SelectionState, SelectionView } from "./components/selectionView";
 import { useEffect, useState } from "react";
 import {
   DEFAULT_NUM_GAMES,
@@ -11,17 +12,15 @@ import {
 interface GlobalState {
   numPlayers: number;
   numGames: number;
-  bannedCivs: number[];
 }
 
 export default function Home(): JSX.Element {
-  const [activeView, setActiveView] = useState<VIEWS>("drafting");
+  const [activeView, setActiveView] = useState<VIEWS>("selecting");
 
   // TODO: Be able to configure the number of players and games
   const [globalState, setGlobalState] = useState<GlobalState>({
     numPlayers: DEFAULT_NUM_PLAYERS,
     numGames: DEFAULT_NUM_GAMES,
-    bannedCivs: [1, 3, 5, 12, 15, 29, 51, 22, 13],
   });
 
   const [banState, setBanState] = useState<BanningState>({
@@ -36,7 +35,7 @@ export default function Home(): JSX.Element {
 
   const [draftState, setDraftState] = useState<DraftingState>({
     selected: null,
-    bannedCivs: [1, 3, 5, 12, 15, 29, 51, 22, 13],
+    bannedCivs: [],
     selectedCivs: new Map(),
     currentPlayer: 1,
     civsRemainingThisRound: globalState.numPlayers,
@@ -45,14 +44,59 @@ export default function Home(): JSX.Element {
     totalPlayers: globalState.numPlayers,
   });
 
+  const [selectionState, setSelectionState] = useState<SelectionState>({
+    selected: null,
+    // draftedCivs: new Map(),
+    draftedCivs: new Map([
+      [1, [1, 2, 13]],
+      [2, [4, 5, 22]],
+      [3, [7, 8, 25]],
+    ]),
+    // Initialize selected civs to be -1 for all players for all games
+    selectedCivs: new Map(),
+    currentPlayer: globalState.numPlayers,
+    civsRemainingThisRound: globalState.numPlayers,
+    turnRound: 0,
+    totalGames: globalState.numGames,
+    totalPlayers: globalState.numPlayers,
+  });
+
   // Wrap set active view to only allow moving forward and also update the global state
+  const setActiveViewWrapper = (view: VIEWS, extraData: any) => {
+    // If we are in banning and want to progress to drafting
+    if (activeView === "banning") {
+      console.log("Moving from banning to drafting");
+      setDraftState({
+        ...draftState,
+        bannedCivs: extraData,
+      });
+      setActiveView(view);
+      return;
+    }
+
+    // If we are in drafting and want to progress to selection
+    if (activeView === "drafting") {
+      console.log("Moving from drafting to selection");
+      setSelectionState({
+        ...selectionState,
+        draftedCivs: extraData,
+      });
+      setActiveView(view);
+      return;
+    }
+
+    // Throw an error of an invalid view transition is attempted
+    throw new Error(`Invalid view transition from ${activeView} to ${view}`);
+  };
 
   // If we are in the banning view, show the banning view
   if (activeView === "banning") {
-    return BanningView(banState, setBanState, setActiveView);
-  } else {
+    return BanningView(banState, setBanState, setActiveViewWrapper);
+  } else if (activeView === "drafting") {
     return DraftingView(draftState, setDraftState);
-    // TODO
-    return <div></div>;
+  } else if (activeView === "selecting") {
+    return SelectionView(selectionState, setSelectionState);
+  } else {
+    throw new Error(`Invalid view: ${activeView}`);
   }
 }

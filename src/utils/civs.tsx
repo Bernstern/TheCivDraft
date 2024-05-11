@@ -320,3 +320,11 @@ export const Civs: Civ[] = [
   ...civ,
   id: index, // This will assign an ID starting from 0 to each civ
 }));
+
+// Add a civ at -1 to represent the "None" option
+export const EMPTY_CIV: Civ = {
+  nationName: "",
+  leaderName: "",
+  iconName: "",
+  id: -1,
+};
