@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { getNextPlayer } from "../utils/logic";
-import { createCivButton } from "./civButton";
+import RGL, { WidthProvider } from "react-grid-layout";
 import { Civs } from "../utils/civs";
+import { getNextPlayer } from "../utils/logic";
 import { VIEWS } from "../utils/settings";
-import RGL, { Layout, WidthProvider } from "react-grid-layout";
+import { createCivButton } from "./civButton";
 
 const GridLayout = WidthProvider(RGL);
 
@@ -40,8 +39,6 @@ export function BanningView(
     console.error(`Invalid civsRemainingThisRound: ${civsRemainingThisRound}`);
     return <div></div>;
   }
-
-  console.log(banningState);
 
   const handleConfirm = () => {
     if (selected === null) {
@@ -83,7 +80,7 @@ export function BanningView(
 
   const civButtons = Civs.map((civ, i) => (
     <div
-      key={civ.id}
+      key={`banning=${civ.id}`}
       data-grid={{
         x: i % NUM_COLS,
         y: Math.floor(i / NUM_COLS),
