@@ -7,7 +7,8 @@ export function createCivButton(
   setSelected: (id: number | null) => void,
   isBanned: number[],
   isSelected: number[],
-  activeView: VIEWS
+  activeView: VIEWS,
+  isSelectable?: number[]
 ): JSX.Element {
   const imgPath = `/images/${
     civ.iconName ? civ.iconName : civ.nationName.toLowerCase()
@@ -38,6 +39,28 @@ export function createCivButton(
     } else {
       extra_css = "bg-sky-800";
     }
+  } else if (activeView === "selecting") {
+    // First if the civ isn't selectable, make it grey and not cursor
+    if (!isSelectable || !isSelectable.includes(civ.id)) {
+      extra_css = "bg-grey-800 cursor-not-allowed";
+    }
+
+    // If it is selected already makt it red for now
+    else if (isSelected.includes(civ.id)) {
+      extra_css = "bg-red-950 cursor-not-allowed";
+    }
+
+    // Otherwise if it is selected, make it green
+    else if (selected === civ.id) {
+      extra_css = "bg-green-500";
+    }
+
+    // Otherwise just the normal blue
+    else {
+      extra_css = "bg-sky-800";
+    }
+  } else if (activeView === "results") {
+    extra_css = "bg-green-950";
   }
 
   return (
@@ -48,6 +71,7 @@ export function createCivButton(
         flex: 1,
         flexDirection: "column",
         minHeight: "100px",
+        height: "80%",
         width: "90%",
       }}
       onClick={() =>

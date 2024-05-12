@@ -16,7 +16,7 @@ interface GlobalState {
 }
 
 export default function Home(): JSX.Element {
-  const [activeView, setActiveView] = useState<VIEWS>("drafting");
+  const [activeView, setActiveView] = useState<VIEWS>("selecting");
 
   // TODO: Be able to configure the number of players and games
   const [globalState, setGlobalState] = useState<GlobalState>({
@@ -49,9 +49,9 @@ export default function Home(): JSX.Element {
     selected: null,
     // draftedCivs: new Map(),
     draftedCivs: new Map([
-      [1, [1, 2, 13]],
-      [2, [4, 5, 22]],
-      [3, [7, 8, 25]],
+      [1, [1, 2, 13, 19]],
+      [2, [4, 5, 22, 29]],
+      [3, [7, 8, 25, 31]],
     ]),
     // Initialize selected civs to be -1 for all players for all games
     selectedCivs: new Map(),
@@ -95,7 +95,9 @@ export default function Home(): JSX.Element {
     return BanningView(banState, setBanState, setActiveViewWrapper);
   } else if (activeView === "drafting") {
     return DraftingView(draftState, setDraftState, setActiveViewWrapper);
+  } else if (activeView === "selecting") {
+    return SelectionView(selectionState, setSelectionState);
   } else {
-    throw new Error(`Invalid view: ${activeView}`);
+    throw new Error(`View not supported at app.tsx: ${activeView}`);
   }
 }

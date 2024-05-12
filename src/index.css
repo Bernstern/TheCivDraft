@@ -53,6 +53,18 @@ main {
   width: 100%;
 }
 
+.grid-layout {
+  min-width: 90vw;
+  min-height: 100vh;
+}
+
+.centered-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+}
+
 
 body {
   color: rgb(var(--foreground-rgb));
