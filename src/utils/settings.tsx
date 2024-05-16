@@ -1,6 +1,6 @@
 // Default fields
-export const DEFAULT_NUM_PLAYERS = 2;
-export const DEFAULT_NUM_GAMES = 1;
+export const DEFAULT_NUM_PLAYERS = 3;
+export const DEFAULT_NUM_GAMES = 3;
 
 // Max fields
 const MAX_NUM_PLAYERS = 6;
