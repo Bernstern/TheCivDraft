@@ -2,6 +2,7 @@ import RGL, { WidthProvider } from "react-grid-layout";
 import { Civs, EMPTY_CIV } from "../utils/civs";
 import { getNextPlayer } from "../utils/logic";
 import { createCivButton } from "./civButton";
+import { VIEWS } from "../utils/settings";
 
 export interface SelectionState {
   selected: number | null;
@@ -18,7 +19,8 @@ const GridLayout = WidthProvider(RGL);
 
 export function SelectionView(
   selectionState: SelectionState,
-  setSelectionState: (state: SelectionState) => void
+  setSelectionState: (state: SelectionState) => void,
+  setActiveView: (view: VIEWS, extraData: any) => void
 ): JSX.Element {
   let {
     selected,
@@ -250,6 +252,11 @@ export function SelectionView(
       civsRemainingThisRound: newCivsRemainingThisRound,
       turnRound: newTurnRound,
     });
+
+    // If we have finished all the picks for all the games, move to the next phase
+    if (newTurnRound === totalGames) {
+      setActiveView("results", selectedCivs);
+    }
   };
 
   return (

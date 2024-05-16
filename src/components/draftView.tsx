@@ -25,7 +25,7 @@ export interface DraftingState {
 export function DraftingView(
   draftState: DraftingState,
   setDraftState: (state: DraftingState) => void,
-  setActiveView: (view: VIEWS, extraData: number[]) => void
+  setActiveView: (view: VIEWS, extraData: any) => void
 ): JSX.Element {
   const {
     selected,
@@ -94,8 +94,9 @@ export function DraftingView(
 
     // Determine if we need to move to the map selection
     if (newTurnRound === totalGames) {
-      console.log("Moving to map selection");
-      setActiveView("selecting", playersSelectedCivs);
+      console.log("Drafting Phase Complete, advancing to civ selection");
+      console.log(selectedCivs);
+      setActiveView("selecting", selectedCivs);
     }
 
     setDraftState({
